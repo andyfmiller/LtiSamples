@@ -7,4 +7,4 @@
 [assembly: AssemblyCompany("andyfmiller.com")]
 [assembly: AssemblyProduct("provider.azurewebsites.net")]
 [assembly: AssemblyCopyright("Copyright © 2014")]
-[assembly: AssemblyVersion("1.4")]
+[assembly: AssemblyVersion("1.5")]

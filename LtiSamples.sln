@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Consumer", "Consumer\Consum
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Provider", "Provider\Provider.csproj", "{7CCDFB6F-24BC-4004-81D6-E09DE7C695D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleLti12", "SimpleLti12\SimpleLti12.csproj", "{83D26CD9-31F0-4840-AD77-B809C427AC2F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LtiLibrary.Core", "..\LtiLibrary\LtiLibrary.Core\LtiLibrary.Core.csproj", "{75D41EB6-F34B-4973-86EB-11ABFEE995B0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LtiLibrary.AspNet", "..\LtiLibrary\LtiLibrary.AspNet\LtiLibrary.AspNet.csproj", "{E4935E79-A08F-4559-BC3B-B8840F30BF56}"
@@ -22,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LtiLibrary.Owin.Security.Lti", "..\LtiLibrary\LtiLibrary.Owin.Security.Lti\LtiLibrary.Owin.Security.Lti.csproj", "{51F8ECC9-9A3F-4C05-B5CD-5ACA34F93BFB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LtiLibrary.AspNet.Identity.Owin", "..\LtiLibrary\LtiLibrary.AspNet.Identity.Owin\LtiLibrary.AspNet.Identity.Owin.csproj", "{224E9981-ED1A-4879-9C80-AF6A15A00089}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleLti", "SimpleLti\SimpleLti.csproj", "{83D26CD9-31F0-4840-AD77-B809C427AC2F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +37,6 @@ Global
 		{7CCDFB6F-24BC-4004-81D6-E09DE7C695D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CCDFB6F-24BC-4004-81D6-E09DE7C695D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CCDFB6F-24BC-4004-81D6-E09DE7C695D9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{83D26CD9-31F0-4840-AD77-B809C427AC2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83D26CD9-31F0-4840-AD77-B809C427AC2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83D26CD9-31F0-4840-AD77-B809C427AC2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83D26CD9-31F0-4840-AD77-B809C427AC2F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{75D41EB6-F34B-4973-86EB-11ABFEE995B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{75D41EB6-F34B-4973-86EB-11ABFEE995B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75D41EB6-F34B-4973-86EB-11ABFEE995B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,6 +53,10 @@ Global
 		{224E9981-ED1A-4879-9C80-AF6A15A00089}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{224E9981-ED1A-4879-9C80-AF6A15A00089}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{224E9981-ED1A-4879-9C80-AF6A15A00089}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83D26CD9-31F0-4840-AD77-B809C427AC2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83D26CD9-31F0-4840-AD77-B809C427AC2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83D26CD9-31F0-4840-AD77-B809C427AC2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83D26CD9-31F0-4840-AD77-B809C427AC2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
