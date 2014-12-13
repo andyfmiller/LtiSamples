@@ -172,7 +172,3 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
-
-# Skip SQL Server database files
-*.mdf
-*.ldf
