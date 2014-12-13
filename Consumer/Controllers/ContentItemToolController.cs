@@ -192,8 +192,7 @@ namespace Consumer.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        [LtiAuthorize(Order = 0)]
-        [Authorize(Order = 1)]
+        //[Authorize]
         public ActionResult PlaceContentItem(LtiRequest model)
         {
             var ltiMessageType = model.LtiMessageType;

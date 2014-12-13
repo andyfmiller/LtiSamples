@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using LtiLibrary.AspNet.Identity.Owin;
 using LtiLibrary.Core.Common;
 using LtiLibrary.Core.OAuth;
@@ -15,9 +16,7 @@ using Provider.Lti;
 using Provider.Models;
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Provider
 {
@@ -85,7 +84,7 @@ namespace Provider
                 Provider = new LtiAuthenticationProvider
                 {
                     // Look up the secret for the consumer
-                    OnAuthenticate = context =>
+                    OnAuthenticate = async context =>
                     {
                         // Make sure the request is not being replayed
                         var timeout = TimeSpan.FromMinutes(5);
@@ -96,13 +95,19 @@ namespace Provider
                         }
 
                         var db = context.OwinContext.Get<ProviderContext>();
-                        var consumer = db.Consumers.SingleOrDefault(c => c.Key == context.LtiRequest.ConsumerKey);
+                        var consumer = await db.Consumers.SingleOrDefaultAsync(c => c.Key == context.LtiRequest.ConsumerKey);
                         if (consumer == null)
                         {
-                            return Task.FromResult<object>(null);
+                            throw new LtiException("Invalid " + OAuthConstants.ConsumerKeyParameter);
                         }
-                        context.Secret = consumer.Secret;
-                        return Task.FromResult<object>(null);
+
+                        var signature = context.LtiRequest.GenerateSignature(consumer.Secret);
+                        if (!signature.Equals(context.LtiRequest.Signature))
+                        {
+                            throw new LtiException("Invalid " + OAuthConstants.SignatureParameter);
+                        }
+
+                        // If we made it this far the request is valid
                     },
 
                     // Sign in using application authentication. This handler will create a new application
@@ -110,7 +115,7 @@ namespace Provider
                     OnAuthenticated = async context =>
                     {
                         var db = context.OwinContext.Get<ProviderContext>();
-                        var consumer = db.Consumers.SingleOrDefault(c => c.Key.Equals(context.LtiRequest.ConsumerKey));
+                        var consumer = await db.Consumers.SingleOrDefaultAsync(c => c.Key.Equals(context.LtiRequest.ConsumerKey));
                         if (consumer == null) return;
 
                         // Record the request for logging purposes and as reference for outcomes
@@ -124,9 +129,11 @@ namespace Provider
                         db.SaveChanges();
 
                         // Add the requst ID as a claim
-                        var claims = new List<Claim>();
-                        claims.Add(new Claim("ProviderRequestId", 
-                            providerRequest.ProviderRequestId.ToString(CultureInfo.InvariantCulture)));
+                        var claims = new List<Claim>
+                        {
+                            new Claim("ProviderRequestId",
+                                providerRequest.ProviderRequestId.ToString(CultureInfo.InvariantCulture))
+                        };
 
                         // Outcomes can live a long time to give the teacher enough
                         // time to grade the assignment. So they are stored in a separate table.
@@ -135,7 +142,7 @@ namespace Provider
                         if (!string.IsNullOrWhiteSpace(lisOutcomeServiceUrl)
                             && !string.IsNullOrWhiteSpace(lisResultSourcedid))
                         {
-                            var outcome = db.Outcomes.SingleOrDefault(o =>
+                            var outcome = await db.Outcomes.SingleOrDefaultAsync(o =>
                                 o.ConsumerId == consumer.ConsumerId
                                 && o.LisResultSourcedId == lisResultSourcedid);
 
@@ -147,12 +154,11 @@ namespace Provider
                                     LisResultSourcedId = lisResultSourcedid
                                 };
                                 db.Outcomes.Add(outcome);
-                                db.SaveChanges(); // Assign OutcomeId;
+                                await db.SaveChangesAsync(); // Assign OutcomeId;
                             }
                             outcome.ContextTitle = context.LtiRequest.ContextTitle;
                             outcome.ServiceUrl = lisOutcomeServiceUrl;
-                            db.SaveChanges();
-
+                            await db.SaveChangesAsync();
 
                             // Add the outcome ID as a claim
                             claims.Add(new Claim("OutcomeId",

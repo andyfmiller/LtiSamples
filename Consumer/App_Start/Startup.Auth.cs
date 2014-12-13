@@ -1,4 +1,9 @@
-﻿using Consumer.Models;
+﻿using System.Data.Entity;
+using Consumer.Models;
+using LtiLibrary.Core.Common;
+using LtiLibrary.Core.OAuth;
+using LtiLibrary.Owin.Security.Lti;
+using LtiLibrary.Owin.Security.Lti.Provider;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
@@ -65,6 +70,43 @@ namespace Consumer
             //    ClientId = "",
             //    ClientSecret = ""
             //});
+
+            app.UseLtiAuthentication(new LtiAuthenticationOptions
+            {
+                Provider = new LtiAuthenticationProvider
+                {
+                    // Look up the secret for the consumer
+                    OnAuthenticate = async context =>
+                    {
+                        // Make sure the request is not being replayed
+                        var timeout = TimeSpan.FromMinutes(5);
+                        var oauthTimestampAbsolute = OAuthConstants.Epoch.AddSeconds(context.LtiRequest.Timestamp);
+                        if (DateTime.UtcNow - oauthTimestampAbsolute > timeout)
+                        {
+                            throw new LtiException("Expired " + OAuthConstants.TimestampParameter);
+                        }
+
+                        var db = context.OwinContext.Get<ConsumerContext>();
+                        var consumer = await db.ContentItemTools.SingleOrDefaultAsync(c => c.ConsumerKey == context.LtiRequest.ConsumerKey);
+                        if (consumer == null)
+                        {
+                            throw new LtiException("Invalid " + OAuthConstants.ConsumerKeyParameter);
+                        }
+
+                        var signature = context.LtiRequest.GenerateSignature(consumer.ConsumerSecret);
+                        if (!signature.Equals(context.LtiRequest.Signature))
+                        {
+                            throw new LtiException("Invalid " + OAuthConstants.SignatureParameter);
+                        }
+
+                        // If we made it this far the request is valid
+                    },
+                },
+
+                // Default application signin
+                SignInAsAuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
+            });
+
         }
     }
 }
