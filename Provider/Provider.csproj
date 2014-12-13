@@ -235,6 +235,7 @@
     <Content Include="Scripts\hideShowPassword\vendor\modernizr.custom.js" />
     <Content Include="Scripts\hideShowPassword\vendor\zepto.custom.js" />
     <None Include="Properties\PublishProfiles\provider.pubxml" />
+    <Content Include="README.md" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
