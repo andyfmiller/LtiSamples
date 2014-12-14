@@ -373,11 +373,6 @@ namespace Provider.Controllers
         //
         // GET: /Tool/View/5
         //
-        // The 2 Authorize filters force the current User
-        // to be authenticated and authorized to access this
-        // action. The final authorization step is to
-        // make sure this user is authorized to see this 
-        // specific tool.
         [Authorize]
         public ActionResult View(int id, bool? success)
         {

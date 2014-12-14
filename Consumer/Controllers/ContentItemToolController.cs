@@ -190,9 +190,8 @@ namespace Consumer.Controllers
             return View(LtiUtility.CreateContentItemSelectionRequestViewModel(Request, contentItemTool, course, user, returnUrl));
         }
 
-        [HttpPost]
         [ValidateInput(false)]
-        //[Authorize]
+        [Authorize]
         public ActionResult PlaceContentItem(LtiRequest model)
         {
             var ltiMessageType = model.LtiMessageType;

@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using LtiLibrary.Owin.Security.Lti;
 
 namespace Consumer
 {
@@ -19,6 +20,11 @@ namespace Consumer
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+            // Enable OWIN authentication for Outcomes API
+            // See http://www.asp.net/web-api/overview/security/individual-accounts-in-web-api
+            config.SuppressDefaultHostAuthentication();
+            config.Filters.Add(new HostAuthenticationFilter(LtiAuthenticationDefaults.AuthenticationType));
         }
     }
 }
