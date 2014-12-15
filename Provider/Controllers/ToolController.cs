@@ -222,11 +222,6 @@ namespace Provider.Controllers
             // The next two custom parameters use well-known custom parameter substitution variables.
             custom.Add("username", "$User.username"); // Used by this TP when pairing a new user
             custom.Add("tc_profile_url", "$ToolConsumerProfile.url"); // Used by this TP to determine TC capabilities
-            // The next three custom parameters use custom, custom parameter substitution variables.
-            // If the TC supports them, GREAT. If not this TP will gracefully degrade.
-            custom.Add("state_id", "$Context.stateId"); // State abbreviation (i.e. "AK" or "OR")
-            custom.Add("district_id", "$Context.ncesLeaId"); // NCES id for the district (LEA)
-            custom.Add("school_id", "$Context.ncesSchoolId"); // NCES id for the school
 
             // Determine the best PresentationDocumentTarget from the list of targets acceptable
             // to the TC assuming the TC sent the list of acceptable targets in priority order
