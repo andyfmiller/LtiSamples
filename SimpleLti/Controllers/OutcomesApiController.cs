@@ -14,18 +14,6 @@ namespace SimpleLti.Controllers
         private static LisResult _lisResult;
 
         /// <summary>
-        /// Return true if the request is authorized.
-        /// </summary>
-        /// <param name="ltiRequest">The LtiOucomesRequest to authorize.</param>
-        /// <returns>True if the request is authorized by the Tool Consumer.</returns>
-        protected override bool IsAuthorized(LtiOutcomesRequest ltiRequest)
-        {
-            // In this example we only check the signature, but in a production
-            // system you may want to track the nonce and prevent replays.
-            return ltiRequest.GenerateSignature("secret").Equals(ltiRequest.Signature);
-        }
-
-        /// <summary>
         /// Delete the score from the consumer database.
         /// </summary>
         /// <param name="lisResultSourcedId">The SourcedId of the score to delete.</param>

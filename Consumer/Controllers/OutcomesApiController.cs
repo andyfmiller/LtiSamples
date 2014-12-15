@@ -60,24 +60,6 @@ namespace Consumer.Controllers
         }
 
         /// <summary>
-        /// Return true if the request is authorized.
-        /// </summary>
-        /// <param name="ltiRequest">The LtiOucomesRequest to authorize.</param>
-        /// <returns>True if the request is authorized by the Tool Consumer.</returns>
-        protected override bool IsAuthorized(LtiOutcomesRequest ltiRequest)
-        {
-            // Every assignment has a consumer key and consumer secret. There is
-            // nothing to prevent multiple providers from using the same key.
-            var secrets = ConsumerContext.Assignments
-                .Where(a => a.ConsumerKey == ltiRequest.ConsumerKey)
-                .Select(assignment => assignment.ConsumerSecret)
-                .Distinct()
-                .ToList();
-
-            return secrets.Any(secret => ltiRequest.GenerateSignature(secret).Equals(ltiRequest.Signature));
-        }
-
-        /// <summary>
         /// Delete the Score that corresponds to the result.
         /// </summary>
         /// <param name="lisResultSourcedId">The sourcedId of the LisResult to delete.</param>
