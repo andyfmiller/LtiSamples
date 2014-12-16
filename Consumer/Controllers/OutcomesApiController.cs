@@ -1,4 +1,5 @@
-﻿using Consumer.Lti;
+﻿using System.Web.Http;
+using Consumer.Lti;
 using Consumer.Models;
 using LtiLibrary.AspNet.Outcomes;
 using LtiLibrary.Core.Outcomes;
@@ -13,6 +14,7 @@ namespace Consumer.Controllers
     /// <summary>
     /// Implements the LTI Basic Outcomes API.
     /// </summary>
+    [Authorize]
     public class OutcomesApiController : OutcomesApiControllerBase
     {
         public OutcomesApiController() { }
