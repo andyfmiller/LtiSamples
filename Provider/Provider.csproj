@@ -492,7 +492,7 @@
     <Content Include="Views\Manage\SetPassword.cshtml" />
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
-    <Content Include="Views\Manage\ManageLtiLogins.cshtml" />
+    <Content Include="Views\Manage\ToolConsumerLogins.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

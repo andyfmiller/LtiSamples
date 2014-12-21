@@ -174,6 +174,7 @@ namespace Provider
                     OnGenerateUserName = async context =>
                         await SecurityHandler.OnGenerateUserName(context)
                 },
+                ChallengResultUrl = new PathString("/Manage/ToolConsumerLogins"),
                 SignInAsAuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
             });
 
