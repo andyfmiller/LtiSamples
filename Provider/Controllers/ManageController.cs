@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Data.Entity;
 using Provider.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -13,16 +13,31 @@ namespace Provider.Controllers
     [Authorize]
     public class ManageController : Controller
     {
+        private ApplicationSignInManager _signInManager;
+        private ApplicationUserManager _userManager;
+
         public ManageController()
         {
         }
 
-        public ManageController(ApplicationUserManager userManager)
+        public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
+            SignInManager = signInManager;
         }
 
-        private ApplicationUserManager _userManager;
+        public ApplicationSignInManager SignInManager
+        {
+            get
+            {
+                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+            }
+            private set 
+            { 
+                _signInManager = value; 
+            }
+        }
+
         public ApplicationUserManager UserManager
         {
             get
@@ -32,14 +47,6 @@ namespace Provider.Controllers
             private set
             {
                 _userManager = value;
-            }
-        }
-
-        private ProviderContext ProviderContext
-        {
-            get
-            {
-                return HttpContext.GetOwinContext().Get<ProviderContext>();
             }
         }
 
@@ -56,28 +63,17 @@ namespace Provider.Controllers
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
+            var userId = User.Identity.GetUserId();
             var model = new IndexViewModel
             {
                 HasPassword = HasPassword(),
-                PhoneNumber = await UserManager.GetPhoneNumberAsync(User.Identity.GetUserId()),
-                TwoFactor = await UserManager.GetTwoFactorEnabledAsync(User.Identity.GetUserId()),
-                Logins = await UserManager.GetLoginsAsync(User.Identity.GetUserId()),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(User.Identity.GetUserId()),
-                    #region LTI
-                LtiLogins = GetLtiLoginsForUser(User.Identity.GetUserId())
-                    #endregion
+                PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
+                TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
+                Logins = await UserManager.GetLoginsAsync(userId),
+                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
             };
             return View(model);
         }
-
-        ////
-        //// GET: /Manage/RemoveLogin
-        //public ActionResult RemoveLogin()
-        //{
-        //    var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());
-        //    ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
-        //    return View(linkedAccounts);
-        //}
 
         //
         // POST: /Manage/RemoveLogin
@@ -92,7 +88,7 @@ namespace Provider.Controllers
                 var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
                 if (user != null)
                 {
-                    await SignInAsync(user, isPersistent: false);
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
                 message = ManageMessageId.RemoveLoginSuccess;
             }
@@ -137,13 +133,14 @@ namespace Provider.Controllers
         //
         // POST: /Manage/EnableTwoFactorAuthentication
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> EnableTwoFactorAuthentication()
         {
             await UserManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId(), true);
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
             if (user != null)
             {
-                await SignInAsync(user, isPersistent: false);
+                await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
             }
             return RedirectToAction("Index", "Manage");
         }
@@ -151,13 +148,14 @@ namespace Provider.Controllers
         //
         // POST: /Manage/DisableTwoFactorAuthentication
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> DisableTwoFactorAuthentication()
         {
             await UserManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId(), false);
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
             if (user != null)
             {
-                await SignInAsync(user, isPersistent: false);
+                await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
             }
             return RedirectToAction("Index", "Manage");
         }
@@ -187,7 +185,7 @@ namespace Provider.Controllers
                 var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
                 if (user != null)
                 {
-                    await SignInAsync(user, isPersistent: false);
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
                 return RedirectToAction("Index", new { Message = ManageMessageId.AddPhoneSuccess });
             }
@@ -208,7 +206,7 @@ namespace Provider.Controllers
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
             if (user != null)
             {
-                await SignInAsync(user, isPersistent: false);
+                await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
             }
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
@@ -236,7 +234,7 @@ namespace Provider.Controllers
                 var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
                 if (user != null)
                 {
-                    await SignInAsync(user, isPersistent: false);
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
             }
@@ -265,7 +263,7 @@ namespace Provider.Controllers
                     var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
                     if (user != null)
                     {
-                        await SignInAsync(user, isPersistent: false);
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                     }
                     return RedirectToAction("Index", new { Message = ManageMessageId.SetPasswordSuccess });
                 }
@@ -322,7 +320,18 @@ namespace Provider.Controllers
             return result.Succeeded ? RedirectToAction("ManageLogins") : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
         }
 
-        #region Helpers
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && _userManager != null)
+            {
+                _userManager.Dispose();
+                _userManager = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
+#region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
@@ -332,12 +341,6 @@ namespace Provider.Controllers
             {
                 return HttpContext.GetOwinContext().Authentication;
             }
-        }
-
-        private async Task SignInAsync(ApplicationUser user, bool isPersistent)
-        {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie, DefaultAuthenticationTypes.TwoFactorCookie);
-            AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, await user.GenerateUserIdentityAsync(UserManager));
         }
 
         private void AddErrors(IdentityResult result)
@@ -379,61 +382,17 @@ namespace Provider.Controllers
             Error
         }
 
-        #endregion
+#endregion
 
-        #region LTI
-
-        //
-        // GET: /Manage/ManageLogins
-        public async Task<ActionResult> ManageLtiLogins(ManageMessageId? message)
+        /// <summary>
+        /// Display a list of known Tool Consumers
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> ToolConsumerLogins()
         {
-            ViewBag.StatusMessage =
-                message == ManageMessageId.RemoveLoginSuccess ? "The LTI login was removed."
-                : message == ManageMessageId.Error ? "An error has occurred."
-                : "";
-            var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
-            if (user == null)
-            {
-                return View("Error");
-            }
-            var ltiLogins = GetLtiLoginsForUser(User.Identity.GetUserId());
-            return View(new ManageLtiLoginsViewModel
-            {
-                CurrentLogins = ltiLogins
-            });
+            var db = HttpContext.GetOwinContext().Get<ProviderContext>();
+            var consumers = await db.Consumers.OrderBy(c => c.Name).ToListAsync();
+            return View(consumers);
         }
-
-        //
-        // POST: /Manage/RemoveLtiLogin
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RemoveLtiLogin(int pairedUserId)
-        {
-            var pairedUser = await ProviderContext.PairedUsers.FindAsync(pairedUserId);
-            if (pairedUser != null)
-            {
-                ProviderContext.PairedUsers.Remove(pairedUser);
-                await ProviderContext.SaveChangesAsync();
-            }
-            return RedirectToAction("ManageLtiLogins", new { Message = ManageMessageId.RemoveLoginSuccess });
-        }
-
-        private IList<LtiLogin> GetLtiLoginsForUser(string userId)
-        {
-            var pairedUsers = ProviderContext.PairedUsers.Where(u => u.UserId.Equals(userId)).ToList();
-            var ltiLogins = new List<LtiLogin>();
-            foreach (var pairedUser in pairedUsers)
-            {
-                var consumer = ProviderContext.Consumers.Find(pairedUser.ConsumerId);
-                ltiLogins.Add(new LtiLogin
-                {
-                    ConsumerName = consumer.Name,
-                    PairedUserId = pairedUser.PairedUserId
-                });
-            }
-            return ltiLogins;
-        }
-
-        #endregion
     }
 }

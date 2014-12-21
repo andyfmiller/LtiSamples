@@ -1,0 +1,16 @@
+﻿@model List<Provider.Models.Consumer>
+
+@{
+    ViewBag.Title = "Tool Consumers";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<p>Please login to one of the Tool Consumers below:</p>
+
+<ul>
+    @foreach (var consumer in Model)
+    {
+        <li>@consumer.Name</li>
+    }
+</ul>
