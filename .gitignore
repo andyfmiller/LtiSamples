@@ -69,8 +69,8 @@ local.properties
 $tf/
 
 #SQL
-#*.mdf
-#*.ldf
+*.mdf
+*.ldf
 
 ## TODO: If you have NuGet Package Restore enabled, uncomment this
 packages/
