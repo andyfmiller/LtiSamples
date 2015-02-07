@@ -1,4 +1,6 @@
-﻿@model SimpleLti.Models.ToolModel
+﻿@using SimpleLti.Controllers
+@using SimpleLti.Models
+@model SimpleLti.Models.ToolModel
 
 @{
     ViewBag.Title = "IMS LTI 1.2 Tool";
@@ -14,17 +16,38 @@
 
 @if (Model != null && !string.IsNullOrEmpty(Model.LtiRequest.LisOutcomeServiceUrl))
 {
-    <h2>Outcomes Service</h2>
+    <h2>Basic Outcomes Service</h2>
     <p>
         The Tool Consumer that sent this launch request is hosting the LTI 1.x Outcomes Service.
         Click @Html.ActionLink("here to send a grade back via the LTI Outcomes Service.",
-            "Outcomes",
+            "BasicOutcomes",
             new
             {
                 Model.LtiRequest.LisOutcomeServiceUrl, 
                 Model.LtiRequest.LisResultSourcedId, 
                 Model.LtiRequest.ConsumerKey, 
                 Model.ConsumerSecret
+            },
+            new { target = "_blank" }
+            )
+    </p>
+}
+
+@if (Model != null)
+{
+    <h2>Outcomes V2 Service</h2>
+    <p>
+        The Tool Consumer that sent this launch request supports the Outcomes Management V2.
+        Click @Html.ActionLink("here to send a grade back via the LTI Outcomes Service.",
+            "Outcomes",
+            new
+            {
+                ActivityId = Guid.NewGuid().ToString(), // Normall calculated by the Tool Provider
+                LineItemServiceUrl = Model.LtiRequest.Parameters["custom_lineitem_url"],
+                LineItemsServiceUrl = Model.LtiRequest.Parameters["custom_lineitems_url"],
+                Model.LtiRequest.ConsumerKey,
+                Model.ConsumerSecret,
+                Model.LtiRequest.ContextId
             },
             new { target = "_blank" }
             )

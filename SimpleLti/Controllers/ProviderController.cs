@@ -1,11 +1,13 @@
-﻿using System.IO;
-using System.Net;
-using System.Web.Mvc;
-using LtiLibrary.AspNet.Extensions;
+﻿using LtiLibrary.AspNet.Extensions;
 using LtiLibrary.Core.Common;
 using LtiLibrary.Core.Lti1;
-using LtiLibrary.Core.Outcomes;
+using LtiLibrary.Core.Outcomes.v2;
 using SimpleLti.Models;
+using System;
+using System.IO;
+using System.Net;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace SimpleLti.Controllers
 {
@@ -68,7 +70,7 @@ namespace SimpleLti.Controllers
         #region LTI 1.1 Outcomes (scores)
 
         /// <summary>
-        /// Display the Outcomes settings and provide buttons to exercise the three actions.
+        /// Display the Basic Outcomes settings and provide buttons to exercise the three actions.
         /// </summary>
         /// <param name="lisOutcomeServiceUrl">The URL to the Outcomes service hosted by the Tool Consumer.</param>
         /// <param name="lisResultSourcedId">The SourcedId of the LisResult used in the demo.</param>
@@ -77,18 +79,20 @@ namespace SimpleLti.Controllers
         /// <remarks>
         /// The Outcomes service is hosted by the Tool Consumer. The Tool Provider call the Outcomes service.
         /// </remarks>
-        public ActionResult Outcomes(string lisOutcomeServiceUrl, string lisResultSourcedId, string consumerKey, string consumerSecret)
+        public ActionResult BasicOutcomes(string lisOutcomeServiceUrl, string lisResultSourcedId, string consumerKey, string consumerSecret)
         {
-            var model = new OutcomeModel();
-            model.LisOutcomeServiceUrl = lisOutcomeServiceUrl;
-            model.LisResultSourcedId = lisResultSourcedId;
-            model.ConsumerKey = consumerKey;
-            model.ConsumerSecret = consumerSecret;
+            var model = new BasicOutcomeModel
+            {
+                LisOutcomeServiceUrl = lisOutcomeServiceUrl,
+                LisResultSourcedId = lisResultSourcedId,
+                ConsumerKey = consumerKey,
+                ConsumerSecret = consumerSecret
+            };
             return View(model);
         }
 
         /// <summary>
-        /// Call the Outcomes service on the Tool Consumer.
+        /// Call the Basic Outcomes service on the Tool Consumer.
         /// </summary>
         /// <param name="model">The score to act on.</param>
         /// <param name="submit">The action to take.</param>
@@ -96,12 +100,12 @@ namespace SimpleLti.Controllers
         /// The Outcomes service is hosted by the Tool Consumer. The Tool Provider call the Outcomes service.
         /// </remarks>
         [HttpPost]
-        public ActionResult Outcomes(OutcomeModel model, string submit)
+        public ActionResult BasicOutcomes(BasicOutcomeModel model, string submit)
         {
             switch (submit)
             {
                 case "Send Grade":
-                    if (LtiOutcomesHelper.PostScore(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
+                    if (LtiLibrary.Core.Outcomes.v1.OutcomesClient.PostScore(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
                         model.LisResultSourcedId, model.Score))
                     {
                         ViewBag.Message = "Grade sent";
@@ -112,7 +116,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Read Grade":
-                    var lisResult = LtiOutcomesHelper.ReadScore(model.LisOutcomeServiceUrl, model.ConsumerKey,
+                    var lisResult = LtiLibrary.Core.Outcomes.v1.OutcomesClient.ReadScore(model.LisOutcomeServiceUrl, model.ConsumerKey,
                         model.ConsumerSecret, model.LisResultSourcedId);
                     if (lisResult.IsValid)
                     {
@@ -125,7 +129,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Delete Grade":
-                    if (LtiOutcomesHelper.DeleteScore(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
+                    if (LtiLibrary.Core.Outcomes.v1.OutcomesClient.DeleteScore(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
                         model.LisResultSourcedId))
                     {
                         model.Score = null;
@@ -171,6 +175,196 @@ namespace SimpleLti.Controllers
                     return Content("No response.");
                 }
             }
+        }
+
+        #endregion
+
+        // LTI Outcomes reverse the relationship between Tool Consumers and Tool Providers. The Tool
+        // Provider becomes a consumer of the Outcomes service hosted by the Tool Consumer. In this
+        // sample, the Tool Provider and tell the Tool Consumer to save, read, and delete scores.
+        #region Outcomes V2 (scores)
+
+        /// <summary>
+        /// Display the Outcomes V2 settings and provide buttons to exercise the three actions.
+        /// </summary>
+        public ActionResult Outcomes(string lineItemServiceUrl, string lineItemsServiceUrl, string contextId, string consumerKey, string consumerSecret)
+        {
+            var model = new LineItemModel
+            {
+                LineItemServiceUrl = lineItemServiceUrl,
+                LineItemsServiceUrl = lineItemsServiceUrl,
+                ConsumerKey = consumerKey,
+                ConsumerSecret = consumerSecret,
+                ContextId = contextId
+            };
+            return View(model);
+        }
+
+        /// <summary>
+        /// Call the Outcomes service on the Tool Consumer.
+        /// </summary>
+        /// <param name="model">The score to act on.</param>
+        /// <param name="submit">The action to take.</param>
+        /// <remarks>
+        /// The Outcomes service is hosted by the Tool Consumer. The Tool Provider call the Outcomes service.
+        /// </remarks>
+        [HttpPost]
+        public async Task<ActionResult> Outcomes(LineItemModel model, string submit)
+        {
+            switch (submit)
+            {
+                case "Delete LineItem":
+                    var deleteLineItemStatusCode = await OutcomesClient.DeleteLineItem(
+                        model.LineItemServiceUrl,
+                        model.ConsumerKey,
+                        model.ConsumerSecret);
+                    switch (deleteLineItemStatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            model.LineItem = null;
+                            ModelState.Clear();
+                            ViewBag.Message = "200 LineItem deleted";
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            ViewBag.Message = "401 Not authorized";
+                            break;
+                        case HttpStatusCode.NotFound:
+                            ViewBag.Message = "404 Not found";
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            ViewBag.Message = "500 Internal server error";
+                            break;
+                        default:
+                            ViewBag.Message = Convert.ToInt32(deleteLineItemStatusCode) + " " + deleteLineItemStatusCode;
+                            break;
+                    }
+                    break;
+                case "Get LineItem":
+                    var getLineItemResponse = await OutcomesClient.GetLineItem(
+                        model.LineItemServiceUrl,
+                        model.ConsumerKey,
+                        model.ConsumerSecret);
+                    switch (getLineItemResponse.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            model.LineItem = getLineItemResponse.Outcome;
+                            model.HttpRequest = getLineItemResponse.HttpRequest;
+                            model.HttpResponse = getLineItemResponse.HttpResponse;
+                            ModelState.Clear();
+                            ViewBag.Message = "200 LineItem received";
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            ViewBag.Message = "401 Not authorized";
+                            break;
+                        case HttpStatusCode.NotFound:
+                            ViewBag.Message = "404 Not found";
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            ViewBag.Message = "500 Internal server error";
+                            break;
+                        default:
+                            ViewBag.Message = Convert.ToInt32(getLineItemResponse.StatusCode) + " " + getLineItemResponse.StatusCode;
+                            break;
+                    }
+                    break;
+                case "Get LineItems":
+                    var getLineItemsResponse = await OutcomesClient.GetLineItemPage(
+                        model.LineItemsServiceUrl,
+                        model.ConsumerKey,
+                        model.ConsumerSecret);
+                    switch (getLineItemsResponse.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            model.HttpRequest = getLineItemsResponse.HttpRequest;
+                            model.HttpResponse = getLineItemsResponse.HttpResponse;
+                            ViewBag.Message = "200 LineItems received";
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            ViewBag.Message = "401 Not authorized";
+                            break;
+                        case HttpStatusCode.NotFound:
+                            ViewBag.Message = "404 Not found";
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            ViewBag.Message = "500 Internal server error";
+                            break;
+                        default:
+                            ViewBag.Message = Convert.ToInt32(getLineItemsResponse.StatusCode) + " " + getLineItemsResponse.StatusCode;
+                            break;
+                    }
+                    break;
+                case "Post LineItem":
+                    var postLineItem = new LineItem
+                    {
+                        ReportingMethod = new Uri("res:totalScore"),
+                        LineItemOf = new Context { ContextId = model.ContextId},
+                        AssignedActivity = new Activity { ActivityId = model.LineItem.AssignedActivity.ActivityId},
+                        ScoreContraints = new NumericLimits {  NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110}
+                    };
+                    var postLineItemResponse = await OutcomesClient.PostLineItem(
+                        postLineItem,
+                        model.LineItemsServiceUrl,
+                        model.ConsumerKey,
+                        model.ConsumerSecret);
+                    switch (postLineItemResponse.StatusCode)
+                    {
+                        case HttpStatusCode.Created:
+                            model.LineItem = postLineItemResponse.Outcome;
+                            model.HttpRequest = postLineItemResponse.HttpRequest;
+                            model.HttpResponse = postLineItemResponse.HttpResponse;
+                            ModelState.Clear();
+                            ViewBag.Message = "201 LineItem added";
+                            break;
+                        case HttpStatusCode.BadRequest:
+                            ViewBag.Message = "400 Bad Request";
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            ViewBag.Message = "401 Not authorized";
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            ViewBag.Message = "500 Internal server error";
+                            break;
+                        default:
+                            ViewBag.Message = Convert.ToInt32(postLineItemResponse.StatusCode) + " " + postLineItemResponse.StatusCode;
+                            break;
+                    }
+                    break;
+                case "Put LineItem":
+                    var putLineItem = new LineItem
+                    {
+                        Id = model.LineItem.Id,
+                        ReportingMethod = new Uri("res:totalScore"),
+                        LineItemOf = new Context { ContextId = model.ContextId },
+                        AssignedActivity = new Activity { ActivityId = model.LineItem.AssignedActivity.ActivityId },
+                        ScoreContraints = new NumericLimits { NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110 },
+                        Results = model.LineItem.Results
+                    };
+                    var putLineItemStatusCode = await OutcomesClient.PutLineItem(
+                        putLineItem,
+                        model.LineItemsServiceUrl,
+                        model.ConsumerKey,
+                        model.ConsumerSecret);
+                    switch (putLineItemStatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            ViewBag.Message = "200 LineItem updated";
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            ViewBag.Message = "401 Not authorized";
+                            break;
+                        case HttpStatusCode.NotFound:
+                            ViewBag.Message = "404 Not found";
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            ViewBag.Message = "500 Internal server error";
+                            break;
+                        default:
+                            ViewBag.Message = Convert.ToInt32(putLineItemStatusCode) + " " + putLineItemStatusCode;
+                            break;
+                    }
+                    break;
+            }
+            return View(model);
         }
 
         #endregion

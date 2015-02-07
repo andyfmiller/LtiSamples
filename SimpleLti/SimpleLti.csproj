@@ -135,9 +135,11 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ConsumerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\OutcomesApiController.cs" />
+    <Compile Include="Controllers\LineItemsController.cs" />
+    <Compile Include="Controllers\OutcomesController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
     <Compile Include="Controllers\ToolConsumerProfileApiController.cs" />
+    <Compile Include="Models\LineItemModel.cs" />
     <Compile Include="Models\ToolModel.cs" />
     <Compile Include="WebForms\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -152,7 +154,7 @@
     <Compile Include="WebForms\Launch.ashx.cs">
       <DependentUpon>Launch.ashx</DependentUpon>
     </Compile>
-    <Compile Include="Models\OutcomeModel.cs" />
+    <Compile Include="Models\BasicOutcomeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebForms\Tool.aspx.cs">
       <DependentUpon>Tool.aspx</DependentUpon>
@@ -165,9 +167,10 @@
   <ItemGroup>
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
-    <Content Include="Views\Provider\Outcomes.cshtml" />
+    <Content Include="Views\Provider\BasicOutcomes.cshtml" />
     <Content Include="Views\Consumer\Launch.cshtml" />
     <Content Include="Views\Provider\Tool.cshtml" />
+    <Content Include="Views\Provider\Outcomes.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,30 +1,99 @@
-﻿@model SimpleLti.Models.OutcomeModel
+﻿@model SimpleLti.Models.LineItemModel
 
 @{
-    ViewBag.Title = "Outcomes";
+    ViewBag.Title = "Outcomes V2";
 }
 
-<h2>Outcomes Service</h2>
+<h2>Outcomes V2 Service</h2>
 
 @using (Html.BeginForm())
 {
-    <div>Service URL: @Html.TextBoxFor(m => m.LisOutcomeServiceUrl, new {disabled = true, size = 100})</div>
-    <div>LIS Result SourcedId: @Html.TextBoxFor(m => m.LisResultSourcedId, new {disabled = true, size = 100})</div>
-    <div>Consumer Key: @Html.TextBoxFor(m => m.ConsumerKey, new {disabled = true, size = 100})</div>
-    <div>Consumer Secret: @Html.TextBoxFor(m => m.ConsumerSecret, new {disabled = true, size = 100})</div>
-    <p>
-        Grade to send to the Tool Consumer: 
-        @if (Model.Score.HasValue)
-        {
-            @Html.TextBoxFor(m => m.Score, new { Model.Score.Value })
-        }
-        else
-        {
-            @Html.TextBoxFor(m => m.Score, new { Value = "" })
-        }
-        @ViewBag.Message
-    </p>
-    <input type="submit" name="submit" value="Send Grade" />
-    <input type="submit" name="submit" value="Read Grade" />
-    <input type="submit" name="submit" value="Delete Grade" />
+    <h2>Launch Information</h2>
+    <table>
+        <tr>
+            <td>LineItems Service URL:</td>
+            <td>
+                @Html.DisplayFor(m => m.LineItemsServiceUrl)
+                @Html.HiddenFor(m => m.LineItemsServiceUrl)
+            </td>
+        </tr>
+        <tr>
+            <td>LineItem Service URL:</td>
+            <td>
+                @Html.DisplayFor(m => m.LineItemServiceUrl)
+                @Html.HiddenFor(m => m.LineItemServiceUrl)
+            </td>
+        </tr>
+        <tr>
+            <td>Consumer Key:</td>
+            <td>
+                @Html.DisplayFor(m => m.ConsumerKey)
+                @Html.HiddenFor(m => m.ConsumerKey)
+            </td>
+        </tr>
+        <tr>
+            <td>Consumer Secret:</td>
+            <td>
+                @Html.DisplayFor(m => m.ConsumerSecret)
+                @Html.HiddenFor(m => m.ConsumerSecret)
+            </td>
+        </tr>
+        <tr>
+            <td>Context ID:</td>
+            <td>
+                @Html.DisplayFor(m => m.ContextId)
+                @Html.HiddenFor(m => m.ContextId)
+            </td>
+        </tr>
+    </table>
+    <h2>LineItem</h2>
+    <p>Available after LineItem is created using Post LineItem.</p>
+    <table>
+        <tr>
+            <td>Activity ID:</td>
+            <td>
+                @Html.TextBoxFor(m => m.LineItem.AssignedActivity.ActivityId)
+            </td>
+        </tr>
+        <tr>
+            <td>LineItem ID:</td>
+            <td>
+                @Html.DisplayFor(m => m.LineItem.Id)
+                @Html.HiddenFor(m => m.LineItem.Id)
+            </td>
+        </tr>
+        <tr>
+            <td>Results:</td>
+            <td>
+                @Html.DisplayFor(m => m.LineItem.Results)
+                @Html.HiddenFor(m => m.LineItem.Results)
+            </td>
+        </tr>
+    </table>
+    <hr />
+    <input type="submit" name="submit" value="Delete LineItem" />
+    <input type="submit" name="submit" value="Get LineItem" />
+    <input type="submit" name="submit" value="Get LineItems" />
+    <input type="submit" name="submit" value="Post LineItem" />
+    <input type="submit" name="submit" value="Put LineItem" />
+    @ViewBag.Message
+    <hr/>
+    <table style="border: 1px solid; width: 100%; table-layout: fixed">
+        <tr>
+            <th style="border: 1px solid">Request</th>
+            <th style="border: 1px solid">Response</th>
+        </tr>
+        <tr>
+            <td style="border: 1px solid; vertical-align: top">
+<pre style="white-space: pre-wrap; word-wrap: break-word; margin: 0">
+@Model.HttpRequest
+</pre>
+            </td>
+            <td style="border: 1px solid; vertical-align: top">
+<pre style="white-space: pre-wrap; word-wrap: break-word; margin: 0">
+@Model.HttpResponse
+</pre>
+            </td>
+        </tr>
+    </table>    
 }

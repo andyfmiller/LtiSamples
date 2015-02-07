@@ -1,6 +1,6 @@
 ﻿using System;
-using LtiLibrary.AspNet.Outcomes;
-using LtiLibrary.Core.Outcomes;
+using LtiLibrary.AspNet.Outcomes.v1;
+using LtiLibrary.Core.Outcomes.v1;
 
 namespace SimpleLti.Controllers
 {
@@ -8,7 +8,7 @@ namespace SimpleLti.Controllers
     /// The OutcomesoApiController is hosted by the Tool Consumer and provides
     /// the functionality of the Outcomes Service API described in IMS LTI 1.1.
     /// </summary>
-    public class OutcomesApiController : OutcomesApiControllerBase
+    public class OutcomesController : OutcomesControllerBase
     {
         // Simple "database" of scores for demonstration purposes
         private static LisResult _lisResult;

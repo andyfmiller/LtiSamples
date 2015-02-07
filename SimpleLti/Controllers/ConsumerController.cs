@@ -48,8 +48,8 @@ namespace SimpleLti.Controllers
             ltiRequest.UserId = "1";
             ltiRequest.SetRoles(new[] { Role.Instructor });
 
-            // Outcomes service (WebApi controller)
-            var controllerUrl = UrlHelper.GenerateUrl("DefaultApi", null, "OutcomesApi",
+            // Basic Outcomes service (WebApi controller)
+            var controllerUrl = UrlHelper.GenerateUrl("DefaultApi", null, "Outcomes",
                 new RouteValueDictionary { { "httproute", string.Empty } }, RouteTable.Routes,
                 Request.RequestContext, false);
             Uri controllerUri;
@@ -58,6 +58,35 @@ namespace SimpleLti.Controllers
                 ltiRequest.LisOutcomeServiceUrl = controllerUri.AbsoluteUri;
             }
             ltiRequest.LisResultSourcedId = "ltilibrary-jdoe-1";
+
+            // Outcomes V2 service (WebApi controller)
+            controllerUrl = UrlHelper.GenerateUrl("LineItemsApi", null, "LineItems",
+                new RouteValueDictionary
+                {
+                    { "httproute", string.Empty }, 
+                    { "contextId", ltiRequest.ContextId }
+                },
+                RouteTable.Routes,
+                Request.RequestContext, false);
+            if (Uri.TryCreate(Request.Url, controllerUrl, out controllerUri))
+            {
+                ltiRequest.LineItemsServiceUrl = controllerUri.AbsoluteUri;
+            }
+            controllerUrl = UrlHelper.GenerateUrl("LineItemsApi", null, "LineItems",
+                new RouteValueDictionary
+                {
+                    { "httproute", string.Empty }, 
+                    { "contextId", ltiRequest.ContextId },
+                    { "id", LineItemsController.LineItemId }
+                },
+                RouteTable.Routes,
+                Request.RequestContext, false);
+            if (Uri.TryCreate(Request.Url, controllerUrl, out controllerUri))
+            {
+                ltiRequest.LineItemServiceUrl = controllerUri.AbsoluteUri;
+            }
+            ltiRequest.AddCustomParameter("lineitem_url", "$LineItem.url");
+            ltiRequest.AddCustomParameter("lineitems_url", "$LineItems.url");
 
             // Tool Consumer Profile service (WebApi controller)
             controllerUrl = UrlHelper.GenerateUrl("DefaultApi", null, "ToolConsumerProfileApi",
