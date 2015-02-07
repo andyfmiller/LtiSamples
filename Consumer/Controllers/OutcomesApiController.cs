@@ -1,8 +1,8 @@
 ﻿using System.Web.Http;
 using Consumer.Lti;
 using Consumer.Models;
-using LtiLibrary.AspNet.Outcomes;
-using LtiLibrary.Core.Outcomes;
+using LtiLibrary.AspNet.Outcomes.v1;
+using LtiLibrary.Core.Outcomes.v1;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Newtonsoft.Json;
@@ -15,7 +15,7 @@ namespace Consumer.Controllers
     /// Implements the LTI Basic Outcomes API.
     /// </summary>
     [Authorize]
-    public class OutcomesApiController : OutcomesApiControllerBase
+    public class OutcomesApiController : OutcomesControllerBase
     {
         public OutcomesApiController() { }
 

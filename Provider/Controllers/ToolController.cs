@@ -1,7 +1,7 @@
 ﻿using LtiLibrary.Core.Common;
 using LtiLibrary.Core.ContentItems;
 using LtiLibrary.Core.Lti1;
-using LtiLibrary.Core.Outcomes;
+using LtiLibrary.Core.Outcomes.v1;
 using Microsoft.AspNet.Identity.Owin;
 using Newtonsoft.Json;
 using Provider.Filters;
@@ -310,7 +310,7 @@ namespace Provider.Controllers
             if (outcome != null)
             {
                 var consumer = ProviderContext.Consumers.Find(outcome.ConsumerId);
-                var score = LtiOutcomesHelper.ReadScore(outcome.ServiceUrl, consumer.Key, consumer.Secret, outcome.LisResultSourcedId);
+                var score = OutcomesClient.ReadScore(outcome.ServiceUrl, consumer.Key, consumer.Secret, outcome.LisResultSourcedId);
                 if (score.IsValid)
                 {
                     return PartialView("_PostScoresPartial",
@@ -333,7 +333,7 @@ namespace Provider.Controllers
         {
             var outcome = ProviderContext.Outcomes.Find(model.OutcomeId);
             var consumer = ProviderContext.Consumers.Find(outcome.ConsumerId);
-            var success  = LtiOutcomesHelper.PostScore(
+            var success  = OutcomesClient.PostScore(
                 outcome.ServiceUrl, consumer.Key, consumer.Secret, outcome.LisResultSourcedId, model.Score);
             return RedirectToAction("View", new { id = model.ToolId, success });
         }

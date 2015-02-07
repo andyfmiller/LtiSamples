@@ -3,7 +3,7 @@ using System.Data.Entity;
 using LtiLibrary.AspNet.Identity.Owin;
 using LtiLibrary.Core.Common;
 using LtiLibrary.Core.OAuth;
-using LtiLibrary.Core.Outcomes;
+using LtiLibrary.Core.Outcomes.v1;
 using LtiLibrary.Owin.Security.Lti;
 using LtiLibrary.Owin.Security.Lti.Provider;
 using Microsoft.AspNet.Identity;
@@ -174,7 +174,7 @@ namespace Provider
                     OnGenerateUserName = async context =>
                         await SecurityHandler.OnGenerateUserName(context)
                 },
-                ChallengResultUrl = new PathString("/Manage/ToolConsumerLogins"),
+                ChallengeResultUrl = new PathString("/Manage/ToolConsumerLogins"),
                 SignInAsAuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
             });
 
