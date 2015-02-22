@@ -102,7 +102,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -498,9 +498,13 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\LtiLibrary\LtiLibrary.AspNet.Identity.Owin\LtiLibrary.AspNet.Identity.Owin.csproj">
+    <ProjectReference Include="..\..\LtiLibrary.Owin\LtiLibrary.AspNet.Identity.Owin\LtiLibrary.AspNet.Identity.Owin.csproj">
       <Project>{224e9981-ed1a-4879-9c80-af6a15a00089}</Project>
       <Name>LtiLibrary.AspNet.Identity.Owin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LtiLibrary.Owin\LtiLibrary.Owin.Security.Lti\LtiLibrary.Owin.Security.Lti.csproj">
+      <Project>{51f8ecc9-9a3f-4c05-b5cd-5aca34f93bfb}</Project>
+      <Name>LtiLibrary.Owin.Security.Lti</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\LtiLibrary\LtiLibrary.AspNet\LtiLibrary.AspNet.csproj">
       <Project>{e4935e79-a08f-4559-bc3b-b8840f30bf56}</Project>
@@ -509,10 +513,6 @@
     <ProjectReference Include="..\..\LtiLibrary\LtiLibrary.Core\LtiLibrary.Core.csproj">
       <Project>{75d41eb6-f34b-4973-86eb-11abfee995b0}</Project>
       <Name>LtiLibrary.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\LtiLibrary\LtiLibrary.Owin.Security.Lti\LtiLibrary.Owin.Security.Lti.csproj">
-      <Project>{51f8ecc9-9a3f-4c05-b5cd-5aca34f93bfb}</Project>
-      <Name>LtiLibrary.Owin.Security.Lti</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
