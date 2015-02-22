@@ -15,11 +15,11 @@ namespace Consumer.Controllers
     /// Implements the LTI Basic Outcomes API.
     /// </summary>
     [Authorize]
-    public class OutcomesApiController : OutcomesControllerBase
+    public class OutcomesController : OutcomesControllerBase
     {
-        public OutcomesApiController() { }
+        public OutcomesController() { }
 
-        public OutcomesApiController(ApplicationUserManager userManager, ConsumerContext consumerContext)
+        public OutcomesController(ApplicationUserManager userManager, ConsumerContext consumerContext)
         {
             UserManager = userManager;
             ConsumerContext = consumerContext;
