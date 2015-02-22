@@ -2,9 +2,9 @@
 using LtiLibrary.Core.Common;
 using LtiLibrary.Core.Lti1;
 using LtiLibrary.Core.Outcomes.v2;
+using LtiLibrary.Core.Profiles;
 using SimpleLti.Models;
 using System;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -159,22 +159,10 @@ namespace SimpleLti.Controllers
         /// LtiLibrary will return the ToolConsumerProfile in the appropriate format based on the Accept header.
         /// Tool Providers should specify the appropriate Accept header.
         /// </remarks>
-        public ActionResult GetToolConsumerProfile(string url)
+        public async Task<ActionResult> GetToolConsumerProfile(string url)
         {
-            var request = WebRequest.CreateHttp(url);
-            request.Accept = LtiConstants.ToolConsumerProfileMediaType;
-            using (var response = request.GetResponse())
-            {
-                using (var stream = response.GetResponseStream())
-                {
-                    if (stream != null)
-                    {
-                        var reader = new StreamReader(stream);
-                        return Content(reader.ReadToEnd());
-                    }
-                    return Content("No response.");
-                }
-            }
+            var toolConsumerProfileResponse = await ToolConsumerProfileClient.GetToolConsumerProfile(url);
+            return Content("<pre>" + toolConsumerProfileResponse.HttpResponse+ "</pre>");
         }
 
         #endregion
@@ -214,11 +202,13 @@ namespace SimpleLti.Controllers
             switch (submit)
             {
                 case "Delete LineItem":
-                    var deleteLineItemStatusCode = await OutcomesClient.DeleteLineItem(
+                    var deleteLineItemResponse = await OutcomesClient.DeleteLineItem(
                         model.LineItemServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret);
-                    switch (deleteLineItemStatusCode)
+                    model.HttpRequest = deleteLineItemResponse.HttpRequest;
+                    model.HttpResponse = deleteLineItemResponse.HttpResponse;
+                    switch (deleteLineItemResponse.StatusCode)
                     {
                         case HttpStatusCode.OK:
                             model.LineItem = null;
@@ -235,7 +225,7 @@ namespace SimpleLti.Controllers
                             ViewBag.Message = "500 Internal server error";
                             break;
                         default:
-                            ViewBag.Message = Convert.ToInt32(deleteLineItemStatusCode) + " " + deleteLineItemStatusCode;
+                            ViewBag.Message = Convert.ToInt32(deleteLineItemResponse.StatusCode) + " " + deleteLineItemResponse.StatusCode;
                             break;
                     }
                     break;
@@ -244,12 +234,12 @@ namespace SimpleLti.Controllers
                         model.LineItemServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret);
+                    model.HttpRequest = getLineItemResponse.HttpRequest;
+                    model.HttpResponse = getLineItemResponse.HttpResponse;
                     switch (getLineItemResponse.StatusCode)
                     {
                         case HttpStatusCode.OK:
                             model.LineItem = getLineItemResponse.Outcome;
-                            model.HttpRequest = getLineItemResponse.HttpRequest;
-                            model.HttpResponse = getLineItemResponse.HttpResponse;
                             ModelState.Clear();
                             ViewBag.Message = "200 LineItem received";
                             break;
@@ -272,11 +262,11 @@ namespace SimpleLti.Controllers
                         model.LineItemsServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret);
+                    model.HttpRequest = getLineItemsResponse.HttpRequest;
+                    model.HttpResponse = getLineItemsResponse.HttpResponse;
                     switch (getLineItemsResponse.StatusCode)
                     {
                         case HttpStatusCode.OK:
-                            model.HttpRequest = getLineItemsResponse.HttpRequest;
-                            model.HttpResponse = getLineItemsResponse.HttpResponse;
                             ViewBag.Message = "200 LineItems received";
                             break;
                         case HttpStatusCode.Unauthorized:
@@ -306,12 +296,12 @@ namespace SimpleLti.Controllers
                         model.LineItemsServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret);
+                    model.HttpRequest = postLineItemResponse.HttpRequest;
+                    model.HttpResponse = postLineItemResponse.HttpResponse;
                     switch (postLineItemResponse.StatusCode)
                     {
                         case HttpStatusCode.Created:
                             model.LineItem = postLineItemResponse.Outcome;
-                            model.HttpRequest = postLineItemResponse.HttpRequest;
-                            model.HttpResponse = postLineItemResponse.HttpResponse;
                             ModelState.Clear();
                             ViewBag.Message = "201 LineItem added";
                             break;
@@ -339,12 +329,14 @@ namespace SimpleLti.Controllers
                         ScoreContraints = new NumericLimits { NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110 },
                         Results = model.LineItem.Results
                     };
-                    var putLineItemStatusCode = await OutcomesClient.PutLineItem(
+                    var putLineItemResponse = await OutcomesClient.PutLineItem(
                         putLineItem,
                         model.LineItemsServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret);
-                    switch (putLineItemStatusCode)
+                    model.HttpRequest = putLineItemResponse.HttpRequest;
+                    model.HttpResponse = putLineItemResponse.HttpResponse;
+                    switch (putLineItemResponse.StatusCode)
                     {
                         case HttpStatusCode.OK:
                             ViewBag.Message = "200 LineItem updated";
@@ -359,7 +351,7 @@ namespace SimpleLti.Controllers
                             ViewBag.Message = "500 Internal server error";
                             break;
                         default:
-                            ViewBag.Message = Convert.ToInt32(putLineItemStatusCode) + " " + putLineItemStatusCode;
+                            ViewBag.Message = Convert.ToInt32(putLineItemResponse.StatusCode) + " " + putLineItemResponse.StatusCode;
                             break;
                     }
                     break;
