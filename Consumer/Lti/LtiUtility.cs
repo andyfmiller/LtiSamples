@@ -72,7 +72,7 @@ namespace Consumer.Lti
             // Outcomes service
             if (course.EnrolledUsers.Any(u => u.Id == user.Id))
             {
-                var outcomesUrl = UrlHelper.GenerateUrl("DefaultApi", null, "OutcomesApi",
+                var outcomesUrl = UrlHelper.GenerateUrl("DefaultApi", null, "Outcomes",
                     new RouteValueDictionary { { "httproute", string.Empty } }, RouteTable.Routes,
                     request.RequestContext, false);
                 Uri outcomesUri;
@@ -89,7 +89,7 @@ namespace Consumer.Lti
             }
 
             // Tool Consumer Profile service
-            var profileUrl = UrlHelper.GenerateUrl("DefaultApi", null, "ToolConsumerProfileApi",
+            var profileUrl = UrlHelper.GenerateUrl("DefaultApi", null, "ToolConsumerProfile",
                 new RouteValueDictionary { { "httproute", string.Empty } }, RouteTable.Routes,
                 request.RequestContext, false);
             Uri profileUri;
