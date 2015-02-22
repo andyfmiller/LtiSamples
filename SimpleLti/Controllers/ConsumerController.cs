@@ -89,7 +89,7 @@ namespace SimpleLti.Controllers
             ltiRequest.AddCustomParameter("lineitems_url", "$LineItems.url");
 
             // Tool Consumer Profile service (WebApi controller)
-            controllerUrl = UrlHelper.GenerateUrl("DefaultApi", null, "ToolConsumerProfileApi",
+            controllerUrl = UrlHelper.GenerateUrl("ToolConsumerProfileApi", null, "ToolConsumerProfile",
                 new RouteValueDictionary { { "httproute", string.Empty } }, RouteTable.Routes,
                 Request.RequestContext, false);
             if (Uri.TryCreate(Request.Url, controllerUrl, out controllerUri))

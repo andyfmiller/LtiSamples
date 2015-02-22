@@ -18,6 +18,10 @@ namespace SimpleLti
                 );
 
             config.Routes.MapHttpRoute(
+                name: "ToolConsumerProfileApi",
+                routeTemplate: "profiles/{controller}");
+
+            config.Routes.MapHttpRoute(
                 name: "LineItemsApi",
                 routeTemplate: "courses/{contextId}/{controller}/{id}",
                 defaults: new {id = RouteParameter.Optional}
