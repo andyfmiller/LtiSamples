@@ -216,16 +216,15 @@ namespace Consumer.Controllers
                 return RedirectToAction("BadRequest", "Error", new { error = "Invalid course id" });
             }
 
-            var contentItems = JsonConvert.DeserializeObject<ContentItemPlacementResponse>(ltiResponse.ContentItems);
-            foreach (var contentItemPlacement in contentItems.Graph)
+            var contentItems = JsonConvert.DeserializeObject<ContentItemSelectionGraph>(ltiResponse.ContentItems);
+            foreach (var contentItem in contentItems.Graph)
             {
-                if (contentItemPlacement.PlacementOf.Type == ContentItemType.LtiLink)
+                if (contentItem.Type == LtiConstants.LtiLinkType)
                 {
-                    var placement = contentItemPlacement.PlacementOf as ILtiLink;
                     var custom = new StringBuilder();
-                    foreach (var key in placement.Custom.Keys)
+                    foreach (var key in contentItem.Custom.Keys)
                     {
-                        custom.AppendFormat("{0}={1}\n", key, placement.Custom[key]);
+                        custom.AppendFormat("{0}={1}\n", key, contentItem.Custom[key]);
                     }
                     var assignment = new Assignment
                     {
@@ -233,9 +232,9 @@ namespace Consumer.Controllers
                         Course = course,
                         ConsumerSecret = contentItemTool.ConsumerSecret,
                         CustomParameters = custom.ToString(),
-                        Description = placement.Text,
-                        Name = placement.Title,
-                        Url = placement.Id ?? contentItemTool.Url
+                        Description = contentItem.Text,
+                        Name = contentItem.Title,
+                        Url = contentItem.Id ?? contentItemTool.Url
                     };
                     ConsumerContext.Assignments.Add(assignment);
                 }

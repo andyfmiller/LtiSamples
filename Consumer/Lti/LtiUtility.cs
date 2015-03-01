@@ -152,7 +152,7 @@ namespace Consumer.Lti
             ltiRequest.LaunchPresentationDocumentTarget = DocumentTarget.iframe;
 
             // Content Item Tool
-            ltiRequest.AcceptMediaTypes = LtiConstants.LaunchMediaType; // Only accept LTI Link
+            ltiRequest.AcceptMediaTypes = LtiConstants.LtiLinkMediaType; // Only accept LTI Link
             ltiRequest.AcceptMultiple = true;
             ltiRequest.AcceptPresentationDocumentTargets = "iframe";
             ltiRequest.AcceptUnsigned = false;

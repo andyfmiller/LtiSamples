@@ -246,22 +246,22 @@ namespace Provider.Controllers
             }
 
             // Start building the response
-            var graph = new List<ContentItemPlacement>
+            var graph = new List<ContentItem>
             {
-                new ContentItemPlacement
+                new ContentItem(LtiConstants.LtiLinkType)
                 {
-                    PresentationDocumentTarget = presentationDocumentTarget,
-                    PlacementOf = new ContentItem(ContentItemType.LtiLink)
+                    Custom = custom,
+                    Id = toolUrl,
+                    MediaType = LtiConstants.LtiLinkMediaType,
+                    Text = tool.Description ?? ltiRequest.Text,
+                    Title = tool.Name ?? ltiRequest.Title,
+                    PlacementAdvice = new ContentItemPlacement
                     {
-                        Custom = custom,
-                        Id = toolUrl,
-                        MediaType = LtiConstants.LaunchMediaType,
-                        Text = tool.Description ?? ltiRequest.Text,
-                        Title = tool.Name ?? ltiRequest.Title
+                        PresentationDocumentTarget = presentationDocumentTarget
                     }
                 }
             };
-            var response = new ContentItemPlacementResponse
+            var response = new ContentItemSelectionGraph
             {
                 Graph = graph
             };
