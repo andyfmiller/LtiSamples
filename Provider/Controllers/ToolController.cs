@@ -266,20 +266,9 @@ namespace Provider.Controllers
                 Graph = graph
             };
 
-            // Content-Item Message 1.0 does not include a ContentItemService. This is
-            // a placeholder for experimenting.
-            if (!string.IsNullOrEmpty(ltiRequest.ContentItemServiceUrl))
-            {
-                var success = ContentItemsHelper.PostContentItems(
-                    ltiRequest.ContentItemServiceUrl, consumer.Key,
-                    consumer.Secret, response, ltiRequest.Data);
-
-                return RedirectToAction("Search", new { success });
-            }
-
             // Content-Item Message 1.0 sends each request (which can have many items)
             // back to the Tool Consumer.
-            var model = ContentItemsHelper.CreateContentItemSelectionResponseViewModel(
+            var model = ContentItemsClient.CreateContentItemSelectionViewModel(
                 ltiRequest.ContentItemReturnUrl, consumer.Key,
                 consumer.Secret, response, ltiRequest.Data,
                 null, null, null, "Selected " + tool.Name);
