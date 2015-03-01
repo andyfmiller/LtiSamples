@@ -196,12 +196,12 @@ namespace Consumer.Controllers
         {
             var ltiMessageType = model.LtiMessageType;
             if (!string.IsNullOrEmpty(ltiMessageType) &&
-                !ltiMessageType.Equals(LtiConstants.ContentItemSelectionResponseLtiMessageType))
+                !ltiMessageType.Equals(LtiConstants.ContentItemSelectionLtiMessageType))
             {
                 return RedirectToAction("BadRequest", "Error", new { error = "Unknown LTI message" });
             }
 
-            var ltiResponse = (IContentItemSelectionResponse)model;
+            var ltiResponse = (IContentItemSelection)model;
             var data = JsonConvert.DeserializeObject<ContentItemData>(ltiResponse.Data);
 
             var contentItemTool = ConsumerContext.ContentItemTools.Find(data.ContentItemToolId);
