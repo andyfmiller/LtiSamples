@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
 using System.Web.Routing;
+using LtiLibrary.AspNet.Lti1;
 using LtiLibrary.Core.Common;
 using LtiLibrary.Core.Lti1;
 
@@ -98,7 +99,7 @@ namespace SimpleLti.Controllers
             }
             ltiRequest.AddCustomParameter("tc_profile_url", "$ToolConsumerProfile.url");
 
-            return View(ltiRequest.GetLtiRequestViewModel("secret"));
+            return View(ltiRequest.GetViewModel("secret"));
         }
 
         #endregion

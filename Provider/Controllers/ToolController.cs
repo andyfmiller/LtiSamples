@@ -1,4 +1,5 @@
-﻿using LtiLibrary.Core.Common;
+﻿using LtiLibrary.AspNet.ContentItems;
+using LtiLibrary.Core.Common;
 using LtiLibrary.Core.ContentItems;
 using LtiLibrary.Core.Lti1;
 using LtiLibrary.Core.Outcomes.v1;
@@ -322,9 +323,9 @@ namespace Provider.Controllers
         {
             var outcome = ProviderContext.Outcomes.Find(model.OutcomeId);
             var consumer = ProviderContext.Consumers.Find(outcome.ConsumerId);
-            var success  = OutcomesClient.PostScore(
+            var result  = OutcomesClient.PostScore(
                 outcome.ServiceUrl, consumer.Key, consumer.Secret, outcome.LisResultSourcedId, model.Score);
-            return RedirectToAction("View", new { id = model.ToolId, success });
+            return RedirectToAction("View", new { id = model.ToolId, success = result.IsValid });
         }
 
         //

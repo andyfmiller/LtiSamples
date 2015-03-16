@@ -1,5 +1,6 @@
 ﻿using Consumer.Models;
 using LtiLibrary.AspNet.Extensions;
+using LtiLibrary.AspNet.Lti1;
 using LtiLibrary.Core.Common;
 using LtiLibrary.Core.Lti1;
 using Microsoft.AspNet.Identity;
@@ -13,6 +14,7 @@ using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using LtiRequestViewModel = LtiLibrary.AspNet.Lti1.LtiRequestViewModel;
 
 namespace Consumer.Lti
 {
@@ -106,7 +108,7 @@ namespace Consumer.Lti
                 ltiRequest.AddCustomParameters(customParameters);
             }
 
-            return ltiRequest.GetLtiRequestViewModel(assignment.ConsumerSecret);
+            return ltiRequest.GetViewModel(assignment.ConsumerSecret);
         }
 
         public static LtiRequestViewModel CreateContentItemSelectionRequestViewModel(HttpRequestBase request, ContentItemTool contentItemTool, Course course, ApplicationUser user, string returnUrl)
@@ -173,7 +175,7 @@ namespace Consumer.Lti
                 ltiRequest.AddCustomParameters(customParameters);
             }
 
-            return ltiRequest.GetLtiRequestViewModel(contentItemTool.ConsumerSecret);
+            return ltiRequest.GetViewModel(contentItemTool.ConsumerSecret);
         }
 
         private static IList<Role> GetLtiRolesForUser(ApplicationUser user)
