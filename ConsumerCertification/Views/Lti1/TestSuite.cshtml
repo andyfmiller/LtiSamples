@@ -1,0 +1,44 @@
+﻿@model ConsumerCertification.Models.Lti1TestLaunch
+
+@{
+    ViewBag.Title = "LTI 1.x Certification Tests";
+}
+
+<table class="table">
+    <tr>
+        <td>
+            Instructor
+        </td>
+        <td>
+            @Html.ActionLink("Link 1", "LtiLaunch", new { link = 1, Url = Model.Url, ConsumerKey = Model.ConsumerKey, ConsumerSecret = Model.ConsumerSecret }, new { @class = "btn btn-default", target = "_blank" })
+            @Html.ActionLink("Link 2", "LtiLaunch", new { link = 2, Url = Model.Url, ConsumerKey = Model.ConsumerKey, ConsumerSecret = Model.ConsumerSecret }, new { @class = "btn btn-default", target = "_blank" })
+            @Html.ActionLink("Link 3", "LtiLaunch", new { link = 3, Url = Model.Url, ConsumerKey = Model.ConsumerKey, ConsumerSecret = Model.ConsumerSecret }, new { @class = "btn btn-default", target = "_blank" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Student
+        </td>
+        <td>
+            @Html.ActionLink("Link 4", "LtiLaunch", new { link = 4, Url = Model.Url, ConsumerKey = Model.ConsumerKey, ConsumerSecret = Model.ConsumerSecret }, new { @class = "btn btn-default", target = "_blank" })
+            @Html.ActionLink("Link 5", "LtiLaunch", new { link = 5, Url = Model.Url, ConsumerKey = Model.ConsumerKey, ConsumerSecret = Model.ConsumerSecret }, new { @class = "btn btn-default", target = "_blank" })
+            @Html.ActionLink("Link 6", "LtiLaunch", new { link = 6, Url = Model.Url, ConsumerKey = Model.ConsumerKey, ConsumerSecret = Model.ConsumerSecret }, new { @class = "btn btn-default", target = "_blank" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Mentor
+        </td>
+        <td>
+            @Html.ActionLink("Link 7", "LtiLaunch", new { link = 7, Url = Model.Url, ConsumerKey = Model.ConsumerKey, ConsumerSecret = Model.ConsumerSecret }, new { @class = "btn btn-default", target = "_blank" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Context Support
+        </td>
+        <td>
+            @Html.ActionLink("Link 8", "LtiLaunch", new { link = 8, Url = Model.Url, ConsumerKey = Model.ConsumerKey, ConsumerSecret = Model.ConsumerSecret }, new { @class = "btn btn-default", target = "_blank" })
+        </td>
+    </tr>
+</table>

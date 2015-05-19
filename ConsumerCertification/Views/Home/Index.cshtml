@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>LTI Tool Consumer Certification Samples</h1>
+    <p class="lead">
+        This LTI Tool Consumer demonstrates one way to use the LtiLibrary packages to build an ASP.NET 
+        application that passes IMS certification. Although you can run the tests to make sure they still
+        work, it is probably much more interesting to review the sample code on GitHub.
+    </p>
+    <p><a href="https://github.com/andyfmiller/LtiSamples" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>LTI 1.x</h2>
+        <ul>
+            <li>Basic launch - 1.0, 1.1, 1.2</li>
+            <li>Basic Outcomes - 1.1</li>
+            <li>Tool Consumer Profile - 1.2</li>
+            <li>Outcomes Management - 1.0</li>
+        </ul>
+        <p>@Html.ActionLink("Start Tests", "Index", "Lti1", null, new { @class = "btn btn-default" })</p>
+    </div>
+    <div class="col-md-4">
+        <h2>LTI 2.x</h2>
+        <ul>
+            <li>TBD</li>
+        </ul>
+    </div>
+    <div class="col-md-4">
+        <h2>TBD</h2>
+    </div>
+</div>
