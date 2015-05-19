@@ -1,6 +1,8 @@
 Samples
 =======
 
+All of these samples (except SimpleLti) are based on the Visual Studio C# ASP.NET Web Application template.
+
 Consumer
 --------
 Full blown LTI Tool Consumer with users, classes, and assignments. Supports Launch, Outcomes, and Content-Item Message.
