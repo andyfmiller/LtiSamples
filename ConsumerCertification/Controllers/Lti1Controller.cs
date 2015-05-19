@@ -121,15 +121,6 @@ tc_profile_url=$ToolConsumerProfile.url";
             switch (link)
             {
                 case 1: // Instructor, Course 1, Resource 1
-                        // Tests passed with this launch
-                        // 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7
-                        // 3.1, 3.2, 3.3, 3.4, 3.5
-                        // 4.1, 4.2, 4.3, 4.4, 4.5
-                        // 5.1, 5.3, 5.5, 5.8, 5.10
-                        // 6.1, 6.2, 6.3, 6.5, 6.7, 6.8
-                        // 7.1, 7.2, 7.3, 7.4
-                        // 9.1, 9.2
-                        // 11.2, 11.3, 11.4
                     request.ContextId = Course1.CourseId.ToString(CultureInfo.InvariantCulture);
                     request.ContextLabel = request.ContextId;
                     request.ContextTitle = ConvertToPlainText(Course1.Title);
@@ -148,9 +139,6 @@ tc_profile_url=$ToolConsumerProfile.url";
                     request.Roles = Role.Instructor.ToString();
                     break;
                 case 2: // Instructor, Course 1, Resource 2
-                        // Tests passed with this launch
-                        // 8.1, 8.4
-                        // 11.1
                     request.ContextId = Course1.CourseId.ToString(CultureInfo.InvariantCulture);
                     request.ContextLabel = request.ContextId;
                     request.ContextTitle = ConvertToPlainText(Course1.Title);
@@ -167,8 +155,6 @@ tc_profile_url=$ToolConsumerProfile.url";
                     request.Roles = Role.Instructor.ToString();
                     break;
                 case 3: // Instructor, Course 2, Resource 1
-                        // Tests passed with this launch
-                        // 8.3
                     request.ContextId = Course2.CourseId.ToString(CultureInfo.InvariantCulture);
                     request.ContextLabel = request.ContextId;
                     request.ContextTitle = ConvertToPlainText(Course2.Title);
@@ -185,10 +171,6 @@ tc_profile_url=$ToolConsumerProfile.url";
                     request.Roles = Role.Instructor.ToString();
                     break;
                 case 4: // Student, Course 1, Resource 1
-                        // Tests passed with this launch
-                        // 5.2
-                        // 8.2
-                        // 10.10
                     request.ContextId = Course1.CourseId.ToString(CultureInfo.InvariantCulture);
                     request.ContextLabel = request.ContextId;
                     request.ContextTitle = ConvertToPlainText(Course1.Title);
@@ -206,8 +188,6 @@ tc_profile_url=$ToolConsumerProfile.url";
                     request.Roles = Role.Learner.ToString();
                     break;
                 case 5: // Student, Course 1, Resource 2
-                        // Tests passed with this launch
-                        // 5.6
                     request.ContextId = Course1.CourseId.ToString(CultureInfo.InvariantCulture);
                     request.ContextLabel = request.ContextId;
                     request.ContextTitle = ConvertToPlainText(Course1.Title);
@@ -219,13 +199,12 @@ tc_profile_url=$ToolConsumerProfile.url";
                     request.LisPersonNameFamily = Student.FamilyName;
                     request.LisPersonNameGiven = Student.GivenName;
                     request.LisPersonSourcedId = Student.UserId;
+                    request.LisResultSourcedId = Student.UserId;
                     request.UserId = Student.UserId;
                     request.UserName = Student.Username;
                     request.Roles = Role.Learner.ToString();
                     break;
                 case 6: // Student, Course 2, Resource 1
-                        // Tests passed with this launch
-                        // 5.7
                     request.ContextId = Course2.CourseId.ToString(CultureInfo.InvariantCulture);
                     request.ContextLabel = request.ContextId;
                     request.ContextTitle = ConvertToPlainText(Course2.Title);
@@ -237,6 +216,7 @@ tc_profile_url=$ToolConsumerProfile.url";
                     //request.LisPersonNameFamily = Student.FamilyName;
                     //request.LisPersonNameGiven = Student.GivenName;
                     request.LisPersonSourcedId = Student.UserId;
+                    request.LisResultSourcedId = Student.UserId;
                     request.UserId = Student.UserId;
                     request.UserName = Student.Username;
                     request.Roles = Role.Learner.ToString();
