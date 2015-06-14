@@ -234,7 +234,7 @@ namespace Consumer.Controllers
                         CustomParameters = custom.ToString(),
                         Description = contentItem.Text,
                         Name = contentItem.Title,
-                        Url = contentItem.Id ?? contentItemTool.Url
+                        Url = (contentItem.Id ?? new Uri(contentItemTool.Url)).AbsoluteUri
                     };
                     ConsumerContext.Assignments.Add(assignment);
                 }

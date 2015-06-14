@@ -29,11 +29,7 @@ namespace ConsumerCertification.Controllers
                 // Build a minimal ToolConsumerProfile for LTI 1.2
                 var profile = new ToolConsumerProfile
                 {
-                    Context = new [] 
-                    {
-                        LtiConstants.ToolConsumerProfileContext
-                    },
-                    Id = Request.RequestUri.ToString(),
+                    Id = Request.RequestUri,
                     CapabilityOffered = new[] 
                     {
                         LtiConstants.BasicLaunchLtiMessageType,
@@ -61,32 +57,16 @@ namespace ConsumerCertification.Controllers
                                 {
                                     Code = code,
                                     Timestamp = DateTime.UtcNow,
-                                    VendorName = new LocalizedName
-                                    {
-                                        Key = "product.vendor.name",
-                                        Value = vendorName
-                                    }
+                                    VendorName = new VendorName(vendorName)
                                 }
                             },
-                            ProductName = new LocalizedName
-                            {
-                                Key = "product.name",
-                                Value = productName
-                            },
+                            ProductName = new ProductName(productName),
                             ProductVersion = productVersion
                         },
                         ServiceOwner = new ServiceOwner
                         {
-                            Name = new LocalizedName
-                            {
-                                Key = "service_owner.name",
-                                Value = vendorName
-                            },
-                            Description = new LocalizedText
-                            {
-                                Key = "service_owner.description",
-                                Value = Assembly.GetExecutingAssembly().FullName
-                            },
+                            Name = new ServiceOwnerName(vendorName),
+                            Description = new ServiceOwnerDescription(Assembly.GetExecutingAssembly().FullName),
                             Support = new Contact ("support@andyfmiller.com")
                         }
                     }

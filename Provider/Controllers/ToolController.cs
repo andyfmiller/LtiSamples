@@ -241,18 +241,15 @@ namespace Provider.Controllers
             var toolUrl = UrlHelper.GenerateUrl("Default", "View", "Tool", new RouteValueDictionary(new { id }), 
                 RouteTable.Routes, Request.RequestContext, false);
             Uri toolUri;
-            if (Uri.TryCreate(Request.Url, toolUrl, out toolUri))
-            {
-                toolUrl = toolUri.AbsoluteUri;
-            }
+            Uri.TryCreate(Request.Url, toolUrl, out toolUri);
 
             // Start building the response
             var graph = new List<ContentItem>
             {
-                new ContentItem(LtiConstants.LtiLinkType)
+                new LtiLink
                 {
                     Custom = custom,
-                    Id = toolUrl,
+                    Id = toolUri,
                     MediaType = LtiConstants.LtiLinkMediaType,
                     Text = tool.Description ?? ltiRequest.Text,
                     Title = tool.Name ?? ltiRequest.Title,

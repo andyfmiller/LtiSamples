@@ -123,7 +123,9 @@
     <Content Include="WebForms\Default.aspx" />
     <Content Include="Global.asax" />
     <Content Include="WebForms\Tool.aspx" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -172,6 +174,7 @@
     <Content Include="Views\Provider\Tool.cshtml" />
     <Content Include="Views\Provider\Outcomes.cshtml" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
+    <Content Include="Views\Provider\GetToolConsumerProfile.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

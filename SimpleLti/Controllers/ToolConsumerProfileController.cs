@@ -46,18 +46,10 @@ namespace SimpleLti.Controllers
                                 {
                                     Code = code,
                                     Timestamp = DateTime.UtcNow,
-                                    VendorName = new LocalizedName
-                                    {
-                                        Key = "product.vendor.name",
-                                        Value = vendorName
-                                    }
+                                    VendorName = new VendorName(vendorName)
                                 }
                             },
-                            ProductName = new LocalizedName
-                            {
-                                Key = "product.name",
-                                Value = productName
-                            },
+                            ProductName = new ProductName(productName),
                             ProductVersion = productVersion
                         }
                     }

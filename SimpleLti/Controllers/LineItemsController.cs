@@ -55,7 +55,7 @@ namespace SimpleLti.Controllers
                     var id = new UriBuilder(Request.RequestUri) {Query = "firstPage"};
                     context.LineItemContainerPage = new LineItemContainerPage
                     {
-                        Id = id.ToString(),
+                        Id = id.Uri,
                         LineItemContainer = new LineItemContainer
                         {
                             MembershipSubject = new Context
@@ -78,7 +78,7 @@ namespace SimpleLti.Controllers
                     return Task.FromResult<object>(null);
                 }
 
-                context.LineItem.Id = LineItemId;
+                context.LineItem.Id = new Uri(LineItemId, UriKind.Relative);
                 context.LineItem.Results = new Uri(Request.RequestUri, "results");
                 _lineItem = context.LineItem;
                 context.StatusCode = HttpStatusCode.Created;

@@ -1,0 +1,12 @@
+﻿@using LtiLibrary.Core.Extensions
+@model LtiLibrary.Core.Profiles.ToolConsumerProfileResponse
+
+@{
+    ViewBag.Title = "Tool Consumer Profile";
+}
+
+<h2>Tool Consumer Profile</h2>
+<pre style="white-space: pre-wrap; word-wrap: break-word; margin: 0">
+@Model.ToolConsumerProfile.ToJsonLdString();
+</pre>
+

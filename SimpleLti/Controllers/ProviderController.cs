@@ -162,7 +162,8 @@ namespace SimpleLti.Controllers
         public async Task<ActionResult> GetToolConsumerProfile(string url)
         {
             var toolConsumerProfileResponse = await ToolConsumerProfileClient.GetToolConsumerProfile(url);
-            return Content("<pre>" + toolConsumerProfileResponse.HttpResponse+ "</pre>");
+            return View(toolConsumerProfileResponse);
+            //return Content(@"<table><tr><td><pre>" + toolConsumerProfileResponse.HttpRequest+ "</pre>");
         }
 
         #endregion
@@ -286,7 +287,7 @@ namespace SimpleLti.Controllers
                 case "Post LineItem":
                     var postLineItem = new LineItem
                     {
-                        ReportingMethod = new Uri("res:totalScore"),
+                        ReportingMethod = "res:totalScore",
                         LineItemOf = new Context { ContextId = model.ContextId},
                         AssignedActivity = new Activity { ActivityId = model.LineItem.AssignedActivity.ActivityId},
                         ScoreContraints = new NumericLimits {  NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110}
@@ -323,7 +324,7 @@ namespace SimpleLti.Controllers
                     var putLineItem = new LineItem
                     {
                         Id = model.LineItem.Id,
-                        ReportingMethod = new Uri("res:totalScore"),
+                        ReportingMethod = "res:totalScore",
                         LineItemOf = new Context { ContextId = model.ContextId },
                         AssignedActivity = new Activity { ActivityId = model.LineItem.AssignedActivity.ActivityId },
                         ScoreContraints = new NumericLimits { NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110 },
