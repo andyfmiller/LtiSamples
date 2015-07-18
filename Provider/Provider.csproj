@@ -189,6 +189,10 @@
     <Compile Include="Migrations\201403162319029_Schema.Designer.cs">
       <DependentUpon>201403162319029_Schema.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507182208019_RemovePairedUser.cs" />
+    <Compile Include="Migrations\201507182208019_RemovePairedUser.Designer.cs">
+      <DependentUpon>201507182208019_RemovePairedUser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Consumer.cs" />
@@ -196,7 +200,6 @@
     <Compile Include="Models\LtiLogin.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Outcome.cs" />
-    <Compile Include="Models\PairedUser.cs" />
     <Compile Include="Models\ProfileViewModels.cs" />
     <Compile Include="Models\ProviderContext.cs" />
     <Compile Include="Models\RegisterLtiUserModel.cs" />
@@ -507,6 +510,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201403162319029_Schema.resx">
       <DependentUpon>201403162319029_Schema.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507182208019_RemovePairedUser.resx">
+      <DependentUpon>201507182208019_RemovePairedUser.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

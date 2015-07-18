@@ -13,7 +13,6 @@ namespace Provider.Models
             return new ProviderContext();
         }
 
-        public DbSet<PairedUser> PairedUsers { get; set; }
         public DbSet<Tool> Tools { get; set; }
 
         // From LtiLibrary
