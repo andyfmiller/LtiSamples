@@ -197,7 +197,6 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Consumer.cs" />
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\LtiLogin.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Outcome.cs" />
     <Compile Include="Models\ProfileViewModels.cs" />

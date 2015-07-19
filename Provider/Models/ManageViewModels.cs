@@ -12,9 +12,6 @@ namespace Provider.Models
         public string PhoneNumber { get; set; }
         public bool TwoFactor { get; set; }
         public bool BrowserRemembered { get; set; }
-        #region
-        public IList<LtiLogin> LtiLogins { get; set; }
-        #endregion
     }
 
     public class ManageLoginsViewModel
@@ -86,11 +83,4 @@ namespace Provider.Models
         public string SelectedProvider { get; set; }
         public ICollection<System.Web.Mvc.SelectListItem> Providers { get; set; }
     }
-
-    #region LTI
-    public class ManageLtiLoginsViewModel
-    {
-        public IList<LtiLogin> CurrentLogins { get; set; }
-    }
-    #endregion
 }
