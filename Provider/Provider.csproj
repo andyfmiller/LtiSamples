@@ -201,7 +201,6 @@
     <Compile Include="Models\Outcome.cs" />
     <Compile Include="Models\ProfileViewModels.cs" />
     <Compile Include="Models\ProviderContext.cs" />
-    <Compile Include="Models\RegisterLtiUserModel.cs" />
     <Compile Include="Models\Tool.cs" />
     <Compile Include="Models\UserRoles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
