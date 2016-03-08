@@ -290,7 +290,8 @@ namespace SimpleLti.Controllers
                         ReportingMethod = "res:totalScore",
                         LineItemOf = new Context { ContextId = model.ContextId},
                         AssignedActivity = new Activity { ActivityId = model.LineItem.AssignedActivity.ActivityId},
-                        ScoreContraints = new NumericLimits {  NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110}
+                        ScoreContraints = new NumericLimits {  NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110},
+                        Result = new [] { new LisResult { ResultAgent = new LisPerson { UserId = "12345"}, ResultOf = new Uri(model.LineItemServiceUrl), ResultStatus = ResultStatus.Final } }
                     };
                     var postLineItemResponse = await OutcomesClient.PostLineItem(
                         postLineItem,
