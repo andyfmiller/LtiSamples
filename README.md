@@ -19,3 +19,14 @@ Full blown LTI Tool Provider with users and consumers. Supports Launch, Outcomes
 SimpleLti
 ---------
 A single app that performs as both a TC and a TP. Has both MVC and WebForms pages.
+
+Getting Started
+===============
+
+1. Download the LtiSamples repository (this repository).
+2. Download the [LtiLibrary](https://github.com/andyfmiller/LtiLibrary) repository.
+3. Open LtiSamples solution in Visual Studio (I use the free Visual Studio 2015 Community Edition).
+4. Make sure all the LtiLibrary projects are loading. If not, then remove them from the solution and add them from wherever you put the repository.
+5. Build the solution and fix any broken references (most likely because you don't have a required library).
+6. Set the Startup Project to SimpleLti and run the solution.
+
