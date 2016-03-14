@@ -11,6 +11,9 @@ namespace ConsumerCertification.Models
         public string ConsumerSecret { get; set; }
 
         [Required]
+        public string CustomParameters { get; set; }
+
+        [Required]
         public string Url { get; set; }
     }
 }

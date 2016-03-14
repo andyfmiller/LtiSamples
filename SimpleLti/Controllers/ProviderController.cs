@@ -67,7 +67,7 @@ namespace SimpleLti.Controllers
         // LTI Outcomes reverse the relationship between Tool Consumers and Tool Providers. The Tool
         // Provider becomes a consumer of the Outcomes service hosted by the Tool Consumer. In this
         // sample, the Tool Provider and tell the Tool Consumer to save, read, and delete scores.
-        #region LTI 1.1 Outcomes (scores)
+        #region Outcomes-1 (scores)
 
         /// <summary>
         /// Display the Basic Outcomes settings and provide buttons to exercise the three actions.
@@ -79,9 +79,9 @@ namespace SimpleLti.Controllers
         /// <remarks>
         /// The Outcomes service is hosted by the Tool Consumer. The Tool Provider call the Outcomes service.
         /// </remarks>
-        public ActionResult BasicOutcomes(string lisOutcomeServiceUrl, string lisResultSourcedId, string consumerKey, string consumerSecret)
+        public ActionResult Outcomes1(string lisOutcomeServiceUrl, string lisResultSourcedId, string consumerKey, string consumerSecret)
         {
-            var model = new BasicOutcomeModel
+            var model = new Outcomes1Model
             {
                 LisOutcomeServiceUrl = lisOutcomeServiceUrl,
                 LisResultSourcedId = lisResultSourcedId,
@@ -100,7 +100,7 @@ namespace SimpleLti.Controllers
         /// The Outcomes service is hosted by the Tool Consumer. The Tool Provider call the Outcomes service.
         /// </remarks>
         [HttpPost]
-        public ActionResult BasicOutcomes(BasicOutcomeModel model, string submit)
+        public ActionResult Outcomes1(Outcomes1Model model, string submit)
         {
             switch (submit)
             {
@@ -171,17 +171,19 @@ namespace SimpleLti.Controllers
         // LTI Outcomes reverse the relationship between Tool Consumers and Tool Providers. The Tool
         // Provider becomes a consumer of the Outcomes service hosted by the Tool Consumer. In this
         // sample, the Tool Provider and tell the Tool Consumer to save, read, and delete scores.
-        #region Outcomes V2 (scores)
+        #region Outcomes-2 (scores)
 
         /// <summary>
         /// Display the Outcomes V2 settings and provide buttons to exercise the three actions.
         /// </summary>
-        public ActionResult Outcomes(string lineItemServiceUrl, string lineItemsServiceUrl, string contextId, string consumerKey, string consumerSecret)
+        public ActionResult Outcomes2(string lineItemServiceUrl, string lineItemsServiceUrl, string resultServiceUrl, string resultsServiceUrl, string contextId, string consumerKey, string consumerSecret)
         {
-            var model = new LineItemModel
+            var model = new Outcomes2Model
             {
                 LineItemServiceUrl = lineItemServiceUrl,
                 LineItemsServiceUrl = lineItemsServiceUrl,
+                ResultServiceUrl = resultServiceUrl,
+                ResultsServiceUrl= resultsServiceUrl,
                 ConsumerKey = consumerKey,
                 ConsumerSecret = consumerSecret,
                 ContextId = contextId
@@ -198,11 +200,11 @@ namespace SimpleLti.Controllers
         /// The Outcomes service is hosted by the Tool Consumer. The Tool Provider call the Outcomes service.
         /// </remarks>
         [HttpPost]
-        public async Task<ActionResult> Outcomes(LineItemModel model, string submit)
+        public async Task<ActionResult> Outcomes2(Outcomes2Model model, string submit)
         {
             switch (submit)
             {
-                case "Delete LineItem":
+                case "Delete LineItem (Delete)":
                     var deleteLineItemResponse = await OutcomesClient.DeleteLineItem(
                         model.LineItemServiceUrl,
                         model.ConsumerKey,
@@ -230,7 +232,7 @@ namespace SimpleLti.Controllers
                             break;
                     }
                     break;
-                case "Get LineItem":
+                case "Get LineItem (Read)":
                     var getLineItemResponse = await OutcomesClient.GetLineItem(
                         model.LineItemServiceUrl,
                         model.ConsumerKey,
@@ -258,7 +260,7 @@ namespace SimpleLti.Controllers
                             break;
                     }
                     break;
-                case "Get LineItems":
+                case "Get LineItems (Read)":
                     var getLineItemsResponse = await OutcomesClient.GetLineItemPage(
                         model.LineItemsServiceUrl,
                         model.ConsumerKey,
@@ -284,14 +286,26 @@ namespace SimpleLti.Controllers
                             break;
                     }
                     break;
-                case "Post LineItem":
+                case "Post LineItem (Create)":
                     var postLineItem = new LineItem
                     {
-                        ReportingMethod = "res:totalScore",
+                        ReportingMethod = "totalScore",
                         LineItemOf = new Context { ContextId = model.ContextId},
                         AssignedActivity = new Activity { ActivityId = model.LineItem.AssignedActivity.ActivityId},
                         ScoreContraints = new NumericLimits {  NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110},
-                        Result = new [] { new LisResult { ResultAgent = new LisPerson { UserId = "12345"}, ResultOf = new Uri(model.LineItemServiceUrl), ResultStatus = ResultStatus.Final } }
+                        Result = new []
+                        {
+                            new LisResult
+                            {
+                                Comment = "Good job!",
+                                ResultAgent = new LisPerson { UserId = "12345"},
+                                ResultOf = new Uri(model.LineItemServiceUrl),
+                                ResultScore = "0.75",
+                                ResultScoreConstraints = new NumericLimits { TotalMaximum = 1 },
+                                ResultStatus = ResultStatus.Final,
+                                TotalScore = (decimal?) 0.75
+                            }
+                        }
                     };
                     var postLineItemResponse = await OutcomesClient.PostLineItem(
                         postLineItem,
@@ -321,11 +335,11 @@ namespace SimpleLti.Controllers
                             break;
                     }
                     break;
-                case "Put LineItem":
+                case "Put LineItem (Update)":
                     var putLineItem = new LineItem
                     {
                         Id = model.LineItem.Id,
-                        ReportingMethod = "res:totalScore",
+                        ReportingMethod = "totalScore",
                         LineItemOf = new Context { ContextId = model.ContextId },
                         AssignedActivity = new Activity { ActivityId = model.LineItem.AssignedActivity.ActivityId },
                         ScoreContraints = new NumericLimits { NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110 },

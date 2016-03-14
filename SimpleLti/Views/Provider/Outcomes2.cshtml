@@ -1,4 +1,4 @@
-﻿@model SimpleLti.Models.LineItemModel
+﻿@model SimpleLti.Models.Outcomes2Model
 
 @{
     ViewBag.Title = "Outcomes V2";
@@ -22,6 +22,20 @@
             <td>
                 @Html.DisplayFor(m => m.LineItemServiceUrl)
                 @Html.HiddenFor(m => m.LineItemServiceUrl)
+            </td>
+        </tr>
+        <tr>
+            <td>Results Service URL:</td>
+            <td>
+                @Html.DisplayFor(m => m.ResultsServiceUrl)
+                @Html.HiddenFor(m => m.ResultsServiceUrl)
+            </td>
+        </tr>
+        <tr>
+            <td>Result Service URL:</td>
+            <td>
+                @Html.DisplayFor(m => m.ResultServiceUrl)
+                @Html.HiddenFor(m => m.ResultServiceUrl)
             </td>
         </tr>
         <tr>
@@ -71,11 +85,11 @@
         </tr>
     </table>
     <hr />
-    <input type="submit" name="submit" value="Delete LineItem" />
-    <input type="submit" name="submit" value="Get LineItem" />
-    <input type="submit" name="submit" value="Get LineItems" />
-    <input type="submit" name="submit" value="Post LineItem" />
-    <input type="submit" name="submit" value="Put LineItem" />
+    <input type="submit" name="submit" value="Delete LineItem (Delete)" />
+    <input type="submit" name="submit" value="Get LineItem (Read)" />
+    <input type="submit" name="submit" value="Get LineItems (Read)" />
+    <input type="submit" name="submit" value="Post LineItem (Create)" />
+    <input type="submit" name="submit" value="Put LineItem (Update)" />
     @ViewBag.Message
     <hr/>
     <table style="border: 1px solid; width: 100%; table-layout: fixed">

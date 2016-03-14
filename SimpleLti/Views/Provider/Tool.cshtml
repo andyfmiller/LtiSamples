@@ -21,7 +21,7 @@
     <p>
         The Tool Consumer that sent this launch request is hosting the LTI 1.x Outcomes Service.
         Click @Html.ActionLink("here to send a grade back via the LTI Outcomes Service.",
-            "BasicOutcomes",
+            "Outcomes1",
             new
             {
                 Model.LtiRequest.LisOutcomeServiceUrl, 
@@ -40,12 +40,14 @@
     <p>
         The Tool Consumer that sent this launch request supports the Outcomes Management V2.
         Click @Html.ActionLink("here to send a grade back via the LTI Outcomes Service.",
-            "Outcomes",
+            "Outcomes2",
             new
             {
                 ActivityId = Guid.NewGuid().ToString(), // Normall calculated by the Tool Provider
                 LineItemServiceUrl = Model.LtiRequest.Parameters["custom_lineitem_url"],
                 LineItemsServiceUrl = Model.LtiRequest.Parameters["custom_lineitems_url"],
+                ResultServiceUrl = Model.LtiRequest.Parameters["custom_result_url"],
+                ResultsServiceUrl = Model.LtiRequest.Parameters["custom_results_url"],
                 Model.LtiRequest.ConsumerKey,
                 Model.ConsumerSecret,
                 Model.LtiRequest.ContextId

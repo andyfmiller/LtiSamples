@@ -1,6 +1,6 @@
 ﻿namespace SimpleLti.Models
 {
-    public class BasicOutcomeModel
+    public class Outcomes1Model
     {
         public string LisOutcomeServiceUrl { get; set; }
         public string LisResultSourcedId { get; set; }

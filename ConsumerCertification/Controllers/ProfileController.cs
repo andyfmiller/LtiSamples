@@ -41,7 +41,11 @@ namespace ConsumerCertification.Controllers
                         "Person.name.given",
                         "Person.name.family",
                         "Person.name.full",
-                        "Membership.role"
+                        "Membership.role",
+                        "LineItem.url",
+                        "LineItems.url",
+                        "Result.url",
+                        "Results.url"
                     },
                     Guid = guid,
                     LtiVersion = context.LtiVersion,
@@ -72,20 +76,48 @@ namespace ConsumerCertification.Controllers
                     }
                 };
 
-                // Add Outcomes Management
+                // Outcomes 1 Service
                 var outcomesUrl = UrlHelper.GenerateUrl("DefaultApi", null, "Outcomes",
                     new RouteValueDictionary {{"httproute", string.Empty}}, RouteTable.Routes,
                     HttpContext.Current.Request.RequestContext, false);
-                Uri serviceUri;
+                Uri outcomesServiceUri;
+
+                // Outcomes 2 LineItems service
+                var lineitemsUrl = UrlHelper.GenerateUrl("DefaultApi", null, "LineItems",
+                    new RouteValueDictionary { { "httproute", string.Empty } }, RouteTable.Routes,
+                    HttpContext.Current.Request.RequestContext, false);
+                Uri lineitemsServiceUri;
+
+                // Outcomes 2 Results service
+                var resultsUrl = UrlHelper.GenerateUrl("DefaultApi", null, "Results",
+                    new RouteValueDictionary { { "httproute", string.Empty } }, RouteTable.Routes,
+                    HttpContext.Current.Request.RequestContext, false);
+                Uri resultsServiceUri;
+
                 profile.ServiceOffered = new[]
                 {
                     new RestService
                     {
                         Action = new[] {"POST"},
-                        EndPoint = Uri.TryCreate(Request.RequestUri, outcomesUrl, out serviceUri) ? serviceUri : null,
+                        EndPoint = Uri.TryCreate(Request.RequestUri, outcomesUrl, out outcomesServiceUri) ? outcomesServiceUri : null,
                         Format = new[] {LtiConstants.OutcomeMediaType}
+                    },
+                    new RestService
+                    {
+                        Id = new Uri("tcp:LineItem.collection"),
+                        Action = new[] {"GET", "POST"},
+                        EndPoint = Uri.TryCreate(Request.RequestUri, lineitemsUrl, out lineitemsServiceUri) ? lineitemsServiceUri : null,
+                        Format = new[] {LtiConstants.LisResultContainerMediaType}
+                    },
+                    new RestService
+                    {
+                        Id = new Uri("tcp:LineItem.item"),
+                        Action = new[] {"GET", "PUT", "DELETE"},
+                        EndPoint = Uri.TryCreate(Request.RequestUri, lineitemsUrl, out lineitemsServiceUri) ? lineitemsServiceUri : null,
+                        Format = new[] {LtiConstants.LisResultMediaType}
                     }
                 };
+
                 context.ToolConsumerProfile = profile;
                 return Task.FromResult<object>(null);
             };

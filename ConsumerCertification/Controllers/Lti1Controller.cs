@@ -78,12 +78,20 @@ namespace ConsumerCertification.Controllers
 Complex!@#$^*(){}[]KEY=Complex!@#$^*;(){}[]½Value
 cert_userid=$User.id
 cert_username=$User.username
-tc_profile_url=$ToolConsumerProfile.url";
+tc_profile_url=$ToolConsumerProfile.url
+lineitem_url=$LineItem.url
+lineitems_url=$LineItems.url
+result_url=$Result.url
+results_url=$Results.url";
 
         // GET: Lti1
         public ActionResult Index()
         {
-            var model = new Lti1TestLaunch();
+            var model = new Lti1TestLaunch
+            {
+                Url = "https://www.imsglobal.org/lti/cert/tc_tool.php?x=With%20Space&y=yes",
+                CustomParameters = Lti1Controller.CustomParameters
+            };
             return View(model);
         }
 
@@ -110,6 +118,8 @@ tc_profile_url=$ToolConsumerProfile.url";
             request.LaunchPresentationCssUrl = GetLaunchPresentationCssUrl();
             request.LaunchPresentationReturnUrl = Request.Url.AbsoluteUri;
             request.LisOutcomeServiceUrl = GetLisOutcomeServiceUrl();
+            request.ResultServiceUrl = GetResultServiceUrl();
+            request.ResultsServiceUrl = GetResultsServiceUrl();
             request.ToolConsumerInfoProductFamilyCode = "LtiLibrary";
             request.ToolConsumerInfoVersion = "1";
             request.ToolConsumerProfileUrl = GetToolConsumerProfileUrl();
@@ -273,6 +283,26 @@ tc_profile_url=$ToolConsumerProfile.url";
         {
             Uri profileUri;
             if (Uri.TryCreate(Request.Url, "/content/site.css", out profileUri))
+            {
+                return profileUri.AbsoluteUri;
+            }
+            return null;
+        }
+
+        private string GetResultServiceUrl()
+        {
+            Uri profileUri;
+            if (Uri.TryCreate(Request.Url, "/api/lineitems/{resultid}", out profileUri))
+            {
+                return profileUri.AbsoluteUri;
+            }
+            return null;
+        }
+
+        private string GetResultsServiceUrl()
+        {
+            Uri profileUri;
+            if (Uri.TryCreate(Request.Url, "/api/lineitems", out profileUri))
             {
                 return profileUri.AbsoluteUri;
             }

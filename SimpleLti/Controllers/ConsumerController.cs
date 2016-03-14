@@ -49,7 +49,7 @@ namespace SimpleLti.Controllers
             ltiRequest.UserId = "1";
             ltiRequest.SetRoles(new[] { Role.Instructor });
 
-            // Basic Outcomes service (WebApi controller)
+            // Outcomes-1 service (WebApi controller)
             var controllerUrl = UrlHelper.GenerateUrl("DefaultApi", null, "Outcomes",
                 new RouteValueDictionary { { "httproute", string.Empty } }, RouteTable.Routes,
                 Request.RequestContext, false);
@@ -60,7 +60,20 @@ namespace SimpleLti.Controllers
             }
             ltiRequest.LisResultSourcedId = "ltilibrary-jdoe-1";
 
-            // Outcomes V2 service (WebApi controller)
+            // Outcomes-2 service (WebApi controller)
+            controllerUrl = UrlHelper.GenerateUrl("LineItemsApi", null, "LineItems",
+                new RouteValueDictionary
+                {
+                    { "httproute", string.Empty },
+                    { "contextId", ltiRequest.ContextId },
+                    { "id", LineItemsController.LineItemId }
+                },
+                RouteTable.Routes,
+                Request.RequestContext, false);
+            if (Uri.TryCreate(Request.Url, controllerUrl, out controllerUri))
+            {
+                ltiRequest.LineItemServiceUrl = controllerUri.AbsoluteUri;
+            }
             controllerUrl = UrlHelper.GenerateUrl("LineItemsApi", null, "LineItems",
                 new RouteValueDictionary
                 {
@@ -73,21 +86,39 @@ namespace SimpleLti.Controllers
             {
                 ltiRequest.LineItemsServiceUrl = controllerUri.AbsoluteUri;
             }
-            controllerUrl = UrlHelper.GenerateUrl("LineItemsApi", null, "LineItems",
+            controllerUrl = UrlHelper.GenerateUrl("ResultsApi", null, "Results",
                 new RouteValueDictionary
                 {
-                    { "httproute", string.Empty }, 
+                    { "httproute", string.Empty },
                     { "contextId", ltiRequest.ContextId },
-                    { "id", LineItemsController.LineItemId }
+                    { "itemId", LineItemsController.LineItemId },
+                    { "id", ResultsController.ResultId }
                 },
                 RouteTable.Routes,
                 Request.RequestContext, false);
             if (Uri.TryCreate(Request.Url, controllerUrl, out controllerUri))
             {
-                ltiRequest.LineItemServiceUrl = controllerUri.AbsoluteUri;
+                ltiRequest.ResultServiceUrl = controllerUri.AbsoluteUri;
             }
+            controllerUrl = UrlHelper.GenerateUrl("ResultsApi", null, "Results",
+                new RouteValueDictionary
+                {
+                    { "httproute", string.Empty },
+                    { "contextId", ltiRequest.ContextId },
+                    { "itemId", LineItemsController.LineItemId }
+                },
+                RouteTable.Routes,
+                Request.RequestContext, false);
+            if (Uri.TryCreate(Request.Url, controllerUrl, out controllerUri))
+            {
+                ltiRequest.ResultsServiceUrl = controllerUri.AbsoluteUri;
+            }
+            // We could just add the values here, but using parameter substitution
+            // is way to test that the correct substitions are happening
             ltiRequest.AddCustomParameter("lineitem_url", "$LineItem.url");
             ltiRequest.AddCustomParameter("lineitems_url", "$LineItems.url");
+            ltiRequest.AddCustomParameter("result_url", "$Result.url");
+            ltiRequest.AddCustomParameter("results_url", "$Results.url");
 
             // Tool Consumer Profile service (WebApi controller)
             controllerUrl = UrlHelper.GenerateUrl("ToolConsumerProfileApi", null, "ToolConsumerProfile",
