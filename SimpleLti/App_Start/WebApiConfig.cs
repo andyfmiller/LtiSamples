@@ -29,7 +29,7 @@ namespace SimpleLti
 
             config.Routes.MapHttpRoute(
                 name: "ResultsApi",
-                routeTemplate: "courses/{contextId}/lineitems/{itemId}/{controller}/{id}",
+                routeTemplate: "courses/{contextId}/lineitems/{lineItemId}/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
                 );
         }

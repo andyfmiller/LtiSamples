@@ -32,8 +32,8 @@ namespace SimpleLti.Controllers
             ltiRequest.ToolConsumerInfoVersion = "1.2";
 
             // Context
-            ltiRequest.ContextId = "Home";
-            ltiRequest.ContextTitle = "Home";
+            ltiRequest.ContextId = LineItemsController.ContextId;
+            ltiRequest.ContextTitle = "Course 1";
             ltiRequest.ContextType = LisContextType.CourseSection;
 
             // Instance
@@ -91,7 +91,7 @@ namespace SimpleLti.Controllers
                 {
                     { "httproute", string.Empty },
                     { "contextId", ltiRequest.ContextId },
-                    { "itemId", LineItemsController.LineItemId },
+                    { "lineItemId", LineItemsController.LineItemId },
                     { "id", ResultsController.ResultId }
                 },
                 RouteTable.Routes,
@@ -105,7 +105,7 @@ namespace SimpleLti.Controllers
                 {
                     { "httproute", string.Empty },
                     { "contextId", ltiRequest.ContextId },
-                    { "itemId", LineItemsController.LineItemId }
+                    { "lineItemId", LineItemsController.LineItemId }
                 },
                 RouteTable.Routes,
                 Request.RequestContext, false);

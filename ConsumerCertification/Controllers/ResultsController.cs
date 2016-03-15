@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
 using LtiLibrary.AspNet.Outcomes.v2;
 using LtiLibrary.Core.Outcomes.v2;
 
@@ -16,7 +19,9 @@ namespace ConsumerCertification.Controllers
         {
             OnDeleteResult = context =>
             {
-                if (string.IsNullOrEmpty(context.Id) || _result == null || !_result.Id.Equals(new Uri(context.Id)))
+                var resultUri = GetResultsUri(context.ContextId, context.LineItemId, context.Id);
+
+                if (resultUri == null || _result == null)
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
@@ -30,7 +35,9 @@ namespace ConsumerCertification.Controllers
 
             OnGetResult = context =>
             {
-                if (string.IsNullOrEmpty(context.Id) || _result == null || !_result.Id.Equals(new Uri(context.Id)))
+                var resultUri = GetResultsUri(context.ContextId, context.LineItemId, context.Id);
+
+                if (resultUri == null || _result == null)
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
@@ -44,23 +51,19 @@ namespace ConsumerCertification.Controllers
 
             OnGetResults = context =>
             {
-                if (_result == null ||
-                    (!string.IsNullOrEmpty(context.LineItemId) &&
-                     !context.LineItemId.Equals(LineItemsController.LineItemId)))
+                if (_result == null)
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    var id = new UriBuilder(Request.RequestUri) { Query = "firstPage" };
                     context.ResultContainerPage = new ResultContainerPage
                     {
-                        Id = id.Uri,
+                        Id = GetResultsUri(context.ContextId, context.LineItemId),
                         ResultContainer = new ResultContainer
                         {
-                            MembershipSubject = new Context
+                            MembershipSubject = new ResultMembershipSubject
                             {
-                                ContextId = LineItemsController.LineItemId,
                                 Results = new[] { _result }
                             }
                         }
@@ -83,6 +86,32 @@ namespace ConsumerCertification.Controllers
                 }
                 return Task.FromResult<object>(null);
             };
+        }
+
+        public Uri GetResultsUri(string contextId, string lineItemId, string id = null)
+        {
+            if (string.IsNullOrEmpty(contextId)) return null;
+            if (string.IsNullOrEmpty(lineItemId)) return null;
+
+            var httpContextWrapper = new HttpContextWrapper(HttpContext.Current);
+            var routeData = RouteTable.Routes.GetRouteData(httpContextWrapper);
+            if (routeData == null) return null;
+            var requestContext = new RequestContext(httpContextWrapper, routeData);
+
+            // Calculate the full URI of the Result based on the routes in WebApiConfig
+            var lineItemUrl = UrlHelper.GenerateUrl("ResultsApi", null, "Results",
+                new RouteValueDictionary
+                {
+                    { "httproute", string.Empty },
+                    { "contextId", contextId },
+                    { "lineItemId", lineItemId },
+                    { "id", id }
+                },
+                RouteTable.Routes, requestContext,
+                false);
+            Uri uri;
+            Uri.TryCreate(httpContextWrapper.Request.Url, lineItemUrl, out uri);
+            return uri;
         }
 
     }

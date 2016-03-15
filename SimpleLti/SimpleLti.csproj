@@ -141,6 +141,7 @@
     <Compile Include="Controllers\OutcomesController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
     <Compile Include="Controllers\ResultsController.cs" />
+    <Compile Include="Controllers\RoutingHelper.cs" />
     <Compile Include="Controllers\ToolConsumerProfileController.cs" />
     <Compile Include="Models\Outcomes2Model.cs" />
     <Compile Include="Models\ToolModel.cs" />

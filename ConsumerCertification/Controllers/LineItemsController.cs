@@ -21,7 +21,7 @@ namespace ConsumerCertification.Controllers
         {
             OnDeleteLineItem = context =>
             {
-                var lineItemUri = GetLineItemUri(context.ContextId, context.Id);
+                var lineItemUri = GetLineItemsUri(context.ContextId, context.Id);
 
                 if (lineItemUri == null || _lineItem == null)
                 {
@@ -37,7 +37,7 @@ namespace ConsumerCertification.Controllers
 
             OnGetLineItem = context =>
             {
-                var lineItemUri = GetLineItemUri(context.ContextId, context.Id);
+                var lineItemUri = GetLineItemsUri(context.ContextId, context.Id);
 
                 if (lineItemUri == null || _lineItem == null)
                 {
@@ -64,7 +64,7 @@ namespace ConsumerCertification.Controllers
                     context.LineItemContainerPage = new LineItemContainerPage
                     {
                         ExternalContextId = LtiConstants.LineItemContainerContextId,
-                        Id = Request.RequestUri,
+                        Id = GetLineItemsUri(context.ContextId),
                         LineItemContainer = new LineItemContainer
                         {
                             LineItemMembershipSubject = new LineItemMembershipSubject
@@ -89,7 +89,7 @@ namespace ConsumerCertification.Controllers
                 }
 
                 // Normally LineItem.Id would be calculated based on an id assigned by the database
-                context.LineItem.Id = GetLineItemUri(context.ContextId, LineItemId); 
+                context.LineItem.Id = GetLineItemsUri(context.ContextId, LineItemId); 
                 context.LineItem.Results = GetLineItemResultsUri(context.ContextId, LineItemId);
                 _lineItem = context.LineItem;
                 context.StatusCode = HttpStatusCode.Created;
@@ -111,53 +111,36 @@ namespace ConsumerCertification.Controllers
             };
         }
 
-        private Uri GetLineItemUri(string contextId, string id)
+        public Uri GetLineItemsUri(string contextId, string id = null)
         {
             if (string.IsNullOrEmpty(contextId)) return null;
-            if (string.IsNullOrEmpty(id)) return null;
 
             var httpContextWrapper = new HttpContextWrapper(HttpContext.Current);
             var routeData = RouteTable.Routes.GetRouteData(httpContextWrapper);
+            if (routeData == null) return null;
             var requestContext = new RequestContext(httpContextWrapper, routeData);
          
             // Calculate the full URI of the LineItem based on the routes in WebApiConfig
             var lineItemUrl = UrlHelper.GenerateUrl("LineItemsApi", null, "LineItems",
                 new RouteValueDictionary
                 {
-                        { "httproute", string.Empty },
-                        { "contextId", contextId },
-                        { "id", id }
+                    { "httproute", string.Empty },
+                    { "contextId", contextId },
+                    { "id", id }
                 },
                 RouteTable.Routes, requestContext,
                 false);
-            Uri lineItemUri;
-            Uri.TryCreate(Request.RequestUri, lineItemUrl, out lineItemUri);
-            return lineItemUri;
+            Uri uri;
+            Uri.TryCreate(httpContextWrapper.Request.Url, lineItemUrl, out uri);
+            return uri;
         }
 
-        private Uri GetLineItemResultsUri(string contextId, string id)
+        private static Uri GetLineItemResultsUri(string contextId, string id)
         {
-            if (string.IsNullOrEmpty(contextId)) return null;
-            if (string.IsNullOrEmpty(id)) return null;
-
-            var httpContextWrapper = new HttpContextWrapper(HttpContext.Current);
-            var routeData = RouteTable.Routes.GetRouteData(httpContextWrapper);
-            var requestContext = new RequestContext(httpContextWrapper, routeData);
-
-            // Calculate the URL to retrieve results for this lineitem
-            // based on the routes in WebApiConfig
-            var resultsUrl = UrlHelper.GenerateUrl("ResultsApi", null, "Results",
-                new RouteValueDictionary
-                {
-                        { "httproute", string.Empty },
-                        { "contextId", contextId },
-                        { "itemId", id }
-                },
-                RouteTable.Routes, requestContext,
-                false);
-            Uri resultsUri;
-            Uri.TryCreate(Request.RequestUri, resultsUrl, out resultsUri);
-            return resultsUri;
+            using (var controller = new ResultsController())
+            {
+                return controller.GetResultsUri(contextId, id);
+            }
         }
     }
 }

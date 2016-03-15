@@ -1,9 +1,6 @@
-﻿using System;
-using System.Web.Mvc;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Routing;
 using LtiLibrary.AspNet.Outcomes.v2;
 using LtiLibrary.Core.Common;
 using LtiLibrary.Core.Outcomes.v2;
@@ -12,15 +9,16 @@ namespace SimpleLti.Controllers
 {
     public class LineItemsController : LineItemsControllerBase
     {
-        // Simple "database" of scores for demonstration purposes
-        public const string LineItemId = "ltilibrary-jdoe-2";
+        // Simple "database" of lineitems for demonstration purposes
+        public const string ContextId = "course-1";
+        public const string LineItemId = "lineitem-1";
         private static LineItem _lineItem;
 
         public LineItemsController()
         {
             OnDeleteLineItem = context =>
             {
-                var lineItemUri = GetLineItemUri(context.ContextId, context.Id);
+                var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), ContextId, context.Id);
 
                 if (lineItemUri == null || _lineItem == null)
                 {
@@ -36,7 +34,7 @@ namespace SimpleLti.Controllers
 
             OnGetLineItem = context =>
             {
-                var lineItemUri = GetLineItemUri(context.ContextId, context.Id);
+                var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, context.Id);
 
                 if (lineItemUri == null || _lineItem == null)
                 {
@@ -63,12 +61,12 @@ namespace SimpleLti.Controllers
                     context.LineItemContainerPage = new LineItemContainerPage
                     {
                         ExternalContextId = LtiConstants.LineItemContainerContextId,
-                        Id = Request.RequestUri,
+                        Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId),
                         LineItemContainer = new LineItemContainer
                         {
                             LineItemMembershipSubject = new LineItemMembershipSubject
                             {
-                                ContextId = _lineItem.LineItemOf.ContextId,
+                                ContextId = context.ContextId,
                                 LineItems = new[] { _lineItem }
                             }
                         }
@@ -88,8 +86,8 @@ namespace SimpleLti.Controllers
                 }
 
                 // Normally LineItem.Id would be calculated based on an id assigned by the database
-                context.LineItem.Id = GetLineItemUri(context.ContextId, LineItemId); 
-                context.LineItem.Results = GetLineItemResultsUri(context.ContextId, LineItemId);
+                context.LineItem.Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, LineItemId); 
+                context.LineItem.Results = RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, LineItemId);
                 _lineItem = context.LineItem;
                 context.StatusCode = HttpStatusCode.Created;
                 return Task.FromResult<object>(null);
@@ -108,55 +106,6 @@ namespace SimpleLti.Controllers
                 }
                 return Task.FromResult<object>(null);
             };
-        }
-
-        private Uri GetLineItemUri(string contextId, string id)
-        {
-            if (string.IsNullOrEmpty(contextId)) return null;
-            if (string.IsNullOrEmpty(id)) return null;
-
-            var httpContextWrapper = new HttpContextWrapper(HttpContext.Current);
-            var routeData = RouteTable.Routes.GetRouteData(httpContextWrapper);
-            var requestContext = new RequestContext(httpContextWrapper, routeData);
-         
-            // Calculate the full URI of the LineItem based on the routes in WebApiConfig
-            var lineItemUrl = UrlHelper.GenerateUrl("LineItemsApi", null, "LineItems",
-                new RouteValueDictionary
-                {
-                        { "httproute", string.Empty },
-                        { "contextId", contextId },
-                        { "id", id }
-                },
-                RouteTable.Routes, requestContext,
-                false);
-            Uri lineItemUri;
-            Uri.TryCreate(Request.RequestUri, lineItemUrl, out lineItemUri);
-            return lineItemUri;
-        }
-
-        private Uri GetLineItemResultsUri(string contextId, string id)
-        {
-            if (string.IsNullOrEmpty(contextId)) return null;
-            if (string.IsNullOrEmpty(id)) return null;
-
-            var httpContextWrapper = new HttpContextWrapper(HttpContext.Current);
-            var routeData = RouteTable.Routes.GetRouteData(httpContextWrapper);
-            var requestContext = new RequestContext(httpContextWrapper, routeData);
-
-            // Calculate the URL to retrieve results for this lineitem
-            // based on the routes in WebApiConfig
-            var resultsUrl = UrlHelper.GenerateUrl("ResultsApi", null, "Results",
-                new RouteValueDictionary
-                {
-                        { "httproute", string.Empty },
-                        { "contextId", contextId },
-                        { "itemId", id }
-                },
-                RouteTable.Routes, requestContext,
-                false);
-            Uri resultsUri;
-            Uri.TryCreate(Request.RequestUri, resultsUrl, out resultsUri);
-            return resultsUri;
         }
     }
 }

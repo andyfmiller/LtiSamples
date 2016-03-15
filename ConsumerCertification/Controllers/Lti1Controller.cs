@@ -122,8 +122,8 @@ results_url=$Results.url";
             request.LineItemServiceUrl = GetLineItemsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId);
             request.LineItemsServiceUrl = GetLineItemsServiceUrl(LineItemsController.ContextId);
             request.LisOutcomeServiceUrl = GetLisOutcomeServiceUrl();
-            request.ResultServiceUrl = GetResultServiceUrl();
-            request.ResultsServiceUrl = GetResultsServiceUrl();
+            request.ResultServiceUrl = GetResultsServiceUrl(LineItemsController.ContextId, LineItemsController.ContextId, ResultsController.ResultId);
+            request.ResultsServiceUrl = GetResultsServiceUrl(LineItemsController.ContextId, LineItemsController.ContextId);
             request.ToolConsumerInfoProductFamilyCode = "LtiLibrary";
             request.ToolConsumerInfoVersion = "1";
             request.ToolConsumerProfileUrl = GetToolConsumerProfileUrl();
@@ -295,45 +295,20 @@ results_url=$Results.url";
 
         private string GetLineItemsServiceUrl(string contextId, string id = null)
         {
-            if (string.IsNullOrEmpty(contextId)) return null;
-
-            var httpContextWrapper = new HttpContextWrapper(System.Web.HttpContext.Current);
-            var routeData = RouteTable.Routes.GetRouteData(httpContextWrapper);
-            var requestContext = new RequestContext(httpContextWrapper, routeData);
-
-            // Calculate the full URI of the LineItem based on the routes in WebApiConfig
-            var lineItemUrl = UrlHelper.GenerateUrl("LineItemsApi", null, "LineItems",
-                new RouteValueDictionary
-                {
-                        { "httproute", string.Empty },
-                        { "contextId", contextId },
-                        { "id", id }
-                },
-                RouteTable.Routes, requestContext,
-                false);
-            Uri lineItemUri;
-            Uri.TryCreate(Request.Url, lineItemUrl, out lineItemUri);
-            return lineItemUri.AbsoluteUri;
+            using (var controller = new LineItemsController())
+            {
+                var uri = controller.GetLineItemsUri(contextId, id);
+                return uri == null ? null : uri.AbsoluteUri;
+            }
         }
 
-        private string GetResultServiceUrl()
+        private string GetResultsServiceUrl(string contextId, string lineItemId, string id = null)
         {
-            Uri profileUri;
-            if (Uri.TryCreate(Request.Url, "/api/lineitems/{resultid}", out profileUri))
+            using (var controller = new ResultsController())
             {
-                return profileUri.AbsoluteUri;
+                var uri = controller.GetResultsUri(contextId, lineItemId, id);
+                return uri == null ? null : uri.AbsoluteUri;
             }
-            return null;
-        }
-
-        private string GetResultsServiceUrl()
-        {
-            Uri profileUri;
-            if (Uri.TryCreate(Request.Url, "/api/lineitems", out profileUri))
-            {
-                return profileUri.AbsoluteUri;
-            }
-            return null;
         }
 
         private string GetLisOutcomeServiceUrl()
