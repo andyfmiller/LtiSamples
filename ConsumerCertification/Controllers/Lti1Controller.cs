@@ -8,7 +8,9 @@ using System;
 using System.Globalization;
 using System.Reflection;
 using System.Threading;
+using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace ConsumerCertification.Controllers
 {
@@ -117,6 +119,8 @@ results_url=$Results.url";
             request.LaunchPresentationHeight = 300;
             request.LaunchPresentationCssUrl = GetLaunchPresentationCssUrl();
             request.LaunchPresentationReturnUrl = Request.Url.AbsoluteUri;
+            request.LineItemServiceUrl = GetLineItemsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId);
+            request.LineItemsServiceUrl = GetLineItemsServiceUrl(LineItemsController.ContextId);
             request.LisOutcomeServiceUrl = GetLisOutcomeServiceUrl();
             request.ResultServiceUrl = GetResultServiceUrl();
             request.ResultsServiceUrl = GetResultsServiceUrl();
@@ -287,6 +291,29 @@ results_url=$Results.url";
                 return profileUri.AbsoluteUri;
             }
             return null;
+        }
+
+        private string GetLineItemsServiceUrl(string contextId, string id = null)
+        {
+            if (string.IsNullOrEmpty(contextId)) return null;
+
+            var httpContextWrapper = new HttpContextWrapper(System.Web.HttpContext.Current);
+            var routeData = RouteTable.Routes.GetRouteData(httpContextWrapper);
+            var requestContext = new RequestContext(httpContextWrapper, routeData);
+
+            // Calculate the full URI of the LineItem based on the routes in WebApiConfig
+            var lineItemUrl = UrlHelper.GenerateUrl("LineItemsApi", null, "LineItems",
+                new RouteValueDictionary
+                {
+                        { "httproute", string.Empty },
+                        { "contextId", contextId },
+                        { "id", id }
+                },
+                RouteTable.Routes, requestContext,
+                false);
+            Uri lineItemUri;
+            Uri.TryCreate(Request.Url, lineItemUrl, out lineItemUri);
+            return lineItemUri.AbsoluteUri;
         }
 
         private string GetResultServiceUrl()
