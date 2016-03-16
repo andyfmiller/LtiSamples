@@ -8,9 +8,7 @@ using System;
 using System.Globalization;
 using System.Reflection;
 using System.Threading;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 
 namespace ConsumerCertification.Controllers
 {
@@ -92,7 +90,7 @@ results_url=$Results.url";
             var model = new Lti1TestLaunch
             {
                 Url = "https://www.imsglobal.org/lti/cert/tc_tool.php?x=With%20Space&y=yes",
-                CustomParameters = Lti1Controller.CustomParameters
+                CustomParameters = CustomParameters
             };
             return View(model);
         }
@@ -122,8 +120,8 @@ results_url=$Results.url";
             request.LineItemServiceUrl = GetLineItemsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId);
             request.LineItemsServiceUrl = GetLineItemsServiceUrl(LineItemsController.ContextId);
             request.LisOutcomeServiceUrl = GetLisOutcomeServiceUrl();
-            request.ResultServiceUrl = GetResultsServiceUrl(LineItemsController.ContextId, LineItemsController.ContextId, ResultsController.ResultId);
-            request.ResultsServiceUrl = GetResultsServiceUrl(LineItemsController.ContextId, LineItemsController.ContextId);
+            request.ResultServiceUrl = GetResultsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId, ResultsController.ResultId);
+            request.ResultsServiceUrl = GetResultsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId);
             request.ToolConsumerInfoProductFamilyCode = "LtiLibrary";
             request.ToolConsumerInfoVersion = "1";
             request.ToolConsumerProfileUrl = GetToolConsumerProfileUrl();
@@ -295,20 +293,14 @@ results_url=$Results.url";
 
         private string GetLineItemsServiceUrl(string contextId, string id = null)
         {
-            using (var controller = new LineItemsController())
-            {
-                var uri = controller.GetLineItemsUri(contextId, id);
-                return uri == null ? null : uri.AbsoluteUri;
-            }
+            var uri = RoutingHelper.GetLineItemsUri(HttpContext, contextId, id);
+            return uri == null ? null : uri.AbsoluteUri;
         }
 
         private string GetResultsServiceUrl(string contextId, string lineItemId, string id = null)
         {
-            using (var controller = new ResultsController())
-            {
-                var uri = controller.GetResultsUri(contextId, lineItemId, id);
-                return uri == null ? null : uri.AbsoluteUri;
-            }
+            var uri = RoutingHelper.GetResultsUri(HttpContext, contextId, lineItemId, id);
+            return uri == null ? null : uri.AbsoluteUri;
         }
 
         private string GetLisOutcomeServiceUrl()

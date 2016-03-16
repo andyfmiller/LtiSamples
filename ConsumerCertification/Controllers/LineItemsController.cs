@@ -1,9 +1,6 @@
-﻿using System;
-using System.Web.Mvc;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Routing;
 using LtiLibrary.AspNet.Outcomes.v2;
 using LtiLibrary.Core.Common;
 using LtiLibrary.Core.Outcomes.v2;
@@ -21,7 +18,7 @@ namespace ConsumerCertification.Controllers
         {
             OnDeleteLineItem = context =>
             {
-                var lineItemUri = GetLineItemsUri(context.ContextId, context.Id);
+                var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), ContextId, context.Id);
 
                 if (lineItemUri == null || _lineItem == null)
                 {
@@ -37,7 +34,7 @@ namespace ConsumerCertification.Controllers
 
             OnGetLineItem = context =>
             {
-                var lineItemUri = GetLineItemsUri(context.ContextId, context.Id);
+                var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, context.Id);
 
                 if (lineItemUri == null || _lineItem == null)
                 {
@@ -64,7 +61,7 @@ namespace ConsumerCertification.Controllers
                     context.LineItemContainerPage = new LineItemContainerPage
                     {
                         ExternalContextId = LtiConstants.LineItemContainerContextId,
-                        Id = GetLineItemsUri(context.ContextId),
+                        Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId),
                         LineItemContainer = new LineItemContainer
                         {
                             LineItemMembershipSubject = new LineItemMembershipSubject
@@ -89,8 +86,8 @@ namespace ConsumerCertification.Controllers
                 }
 
                 // Normally LineItem.Id would be calculated based on an id assigned by the database
-                context.LineItem.Id = GetLineItemsUri(context.ContextId, LineItemId); 
-                context.LineItem.Results = GetLineItemResultsUri(context.ContextId, LineItemId);
+                context.LineItem.Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, LineItemId); 
+                context.LineItem.Results = RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, LineItemId);
                 _lineItem = context.LineItem;
                 context.StatusCode = HttpStatusCode.Created;
                 return Task.FromResult<object>(null);
@@ -109,38 +106,6 @@ namespace ConsumerCertification.Controllers
                 }
                 return Task.FromResult<object>(null);
             };
-        }
-
-        public Uri GetLineItemsUri(string contextId, string id = null)
-        {
-            if (string.IsNullOrEmpty(contextId)) return null;
-
-            var httpContextWrapper = new HttpContextWrapper(HttpContext.Current);
-            var routeData = RouteTable.Routes.GetRouteData(httpContextWrapper);
-            if (routeData == null) return null;
-            var requestContext = new RequestContext(httpContextWrapper, routeData);
-         
-            // Calculate the full URI of the LineItem based on the routes in WebApiConfig
-            var lineItemUrl = UrlHelper.GenerateUrl("LineItemsApi", null, "LineItems",
-                new RouteValueDictionary
-                {
-                    { "httproute", string.Empty },
-                    { "contextId", contextId },
-                    { "id", id }
-                },
-                RouteTable.Routes, requestContext,
-                false);
-            Uri uri;
-            Uri.TryCreate(httpContextWrapper.Request.Url, lineItemUrl, out uri);
-            return uri;
-        }
-
-        private static Uri GetLineItemResultsUri(string contextId, string id)
-        {
-            using (var controller = new ResultsController())
-            {
-                return controller.GetResultsUri(contextId, id);
-            }
         }
     }
 }
