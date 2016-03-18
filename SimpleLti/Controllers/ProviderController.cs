@@ -264,7 +264,8 @@ namespace SimpleLti.Controllers
                     var getLineItemsResponse = await OutcomesClient.GetLineItemPage(
                         model.LineItemsServiceUrl,
                         model.ConsumerKey,
-                        model.ConsumerSecret);
+                        model.ConsumerSecret,
+                        activityId: model.LineItem.AssignedActivity.ActivityId);
                     model.HttpRequest = getLineItemsResponse.HttpRequest;
                     model.HttpResponse = getLineItemsResponse.HttpResponse;
                     switch (getLineItemsResponse.StatusCode)
