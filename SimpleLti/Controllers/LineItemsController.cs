@@ -50,29 +50,27 @@ namespace SimpleLti.Controllers
 
             OnGetLineItems = context =>
             {
-                if (_lineItem == null ||
-                    (!string.IsNullOrEmpty(context.ActivityId) &&
-                     !context.ActivityId.Equals(_lineItem.AssignedActivity.ActivityId)))
+                context.LineItemContainerPage = new LineItemContainerPage
                 {
-                    context.StatusCode = HttpStatusCode.NotFound;
-                }
-                else
-                {
-                    context.LineItemContainerPage = new LineItemContainerPage
+                    ExternalContextId = LtiConstants.LineItemContainerContextId,
+                    Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId),
+                    LineItemContainer = new LineItemContainer
                     {
-                        ExternalContextId = LtiConstants.LineItemContainerContextId,
-                        Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId),
-                        LineItemContainer = new LineItemContainer
+                        LineItemMembershipSubject = new LineItemMembershipSubject
                         {
-                            LineItemMembershipSubject = new LineItemMembershipSubject
-                            {
-                                ContextId = context.ContextId,
-                                LineItems = new[] { _lineItem }
-                            }
+                            ContextId = context.ContextId,
+                            LineItems = new LineItem[] { }
                         }
-                    };
-                    context.StatusCode = HttpStatusCode.OK;
+                    }
+                };
+
+                if (_lineItem != null &&
+                    (string.IsNullOrEmpty(context.ActivityId) ||
+                     context.ActivityId.Equals(_lineItem.AssignedActivity.ActivityId)))
+                {
+                    context.LineItemContainerPage.LineItemContainer.LineItemMembershipSubject.LineItems = new[] {_lineItem};
                 }
+                context.StatusCode = HttpStatusCode.OK;
                 return Task.FromResult<object>(null);
             };
 
