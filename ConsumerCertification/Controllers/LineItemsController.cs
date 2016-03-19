@@ -64,7 +64,7 @@ namespace ConsumerCertification.Controllers
                         Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId),
                         LineItemContainer = new LineItemContainer
                         {
-                            LineItemMembershipSubject = new LineItemMembershipSubject
+                            MembershipSubject = new LineItemMembershipSubject
                             {
                                 ContextId = context.ContextId,
                                 LineItems = new[] { _lineItem }
