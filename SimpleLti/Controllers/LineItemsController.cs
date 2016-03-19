@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using LtiLibrary.AspNet.Outcomes.v2;
@@ -12,7 +13,9 @@ namespace SimpleLti.Controllers
         // Simple "database" of lineitems for demonstration purposes
         public const string ContextId = "course-1";
         public const string LineItemId = "lineitem-1";
-        private static LineItem _lineItem;
+        public const string ResultId = "result-1";
+        public static LineItem LineItem;
+        public static LisResult Result;
 
         public LineItemsController()
         {
@@ -20,13 +23,14 @@ namespace SimpleLti.Controllers
             {
                 var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), ContextId, context.Id);
 
-                if (lineItemUri == null || _lineItem == null)
+                if (LineItem == null || !LineItem.Id.Equals(lineItemUri))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    _lineItem = null;
+                    LineItem = null;
+                    Result = null;
                     context.StatusCode = HttpStatusCode.OK;
                 }
                 return Task.FromResult<object>(null);
@@ -36,14 +40,24 @@ namespace SimpleLti.Controllers
             {
                 var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, context.Id);
 
-                if (lineItemUri == null || _lineItem == null)
+                if (LineItem == null || !LineItem.Id.Equals(lineItemUri))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    context.LineItem = _lineItem;
+                    context.LineItem = LineItem;
                     context.StatusCode = HttpStatusCode.OK;
+                }
+                return Task.FromResult<object>(null);
+            };
+
+            OnGetLineItemWithResults = context =>
+            {
+                OnGetLineItem(context);
+                if (context.LineItem != null && Result != null)
+                {
+                    context.LineItem.Result = new[] {Result};
                 }
                 return Task.FromResult<object>(null);
             };
@@ -56,7 +70,7 @@ namespace SimpleLti.Controllers
                     Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId),
                     LineItemContainer = new LineItemContainer
                     {
-                        LineItemMembershipSubject = new LineItemMembershipSubject
+                        MembershipSubject = new LineItemMembershipSubject
                         {
                             ContextId = context.ContextId,
                             LineItems = new LineItem[] { }
@@ -64,11 +78,11 @@ namespace SimpleLti.Controllers
                     }
                 };
 
-                if (_lineItem != null &&
+                if (LineItem != null &&
                     (string.IsNullOrEmpty(context.ActivityId) ||
-                     context.ActivityId.Equals(_lineItem.AssignedActivity.ActivityId)))
+                     context.ActivityId.Equals(LineItem.AssignedActivity.ActivityId)))
                 {
-                    context.LineItemContainerPage.LineItemContainer.LineItemMembershipSubject.LineItems = new[] {_lineItem};
+                    context.LineItemContainerPage.LineItemContainer.MembershipSubject.LineItems = new[] {LineItem};
                 }
                 context.StatusCode = HttpStatusCode.OK;
                 return Task.FromResult<object>(null);
@@ -77,7 +91,7 @@ namespace SimpleLti.Controllers
             // Create a LineItem
             OnPostLineItem = context =>
             {
-                if (_lineItem != null)
+                if (LineItem != null)
                 {
                     context.StatusCode = HttpStatusCode.BadRequest;
                     return Task.FromResult<object>(null);
@@ -86,20 +100,38 @@ namespace SimpleLti.Controllers
                 // Normally LineItem.Id would be calculated based on an id assigned by the database
                 context.LineItem.Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, LineItemId); 
                 context.LineItem.Results = RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, LineItemId);
-                _lineItem = context.LineItem;
+                LineItem = context.LineItem;
                 context.StatusCode = HttpStatusCode.Created;
                 return Task.FromResult<object>(null);
             };
 
+            // Update LineItem (but not results)
+            //TODO: Do something with results passed in
             OnPutLineItem = context =>
             {
-                if (context.LineItem == null || _lineItem == null || !_lineItem.Id.Equals(context.LineItem.Id))
+                if (context.LineItem == null || LineItem == null || !LineItem.Id.Equals(context.LineItem.Id))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    _lineItem = context.LineItem;
+                    LineItem = context.LineItem;
+                    context.StatusCode = HttpStatusCode.OK;
+                }
+                return Task.FromResult<object>(null);
+            };
+
+            // Update LineItem and Result
+            //TODO: Update Result?
+            OnPutLineItemWithResults = context =>
+            {
+                if (context.LineItem == null || LineItem == null || !LineItem.Id.Equals(context.LineItem.Id))
+                {
+                    context.StatusCode = HttpStatusCode.NotFound;
+                }
+                else
+                {
+                    LineItem = context.LineItem;
                     context.StatusCode = HttpStatusCode.OK;
                 }
                 return Task.FromResult<object>(null);

@@ -92,7 +92,7 @@ namespace SimpleLti.Controllers
                     { "httproute", string.Empty },
                     { "contextId", ltiRequest.ContextId },
                     { "lineItemId", LineItemsController.LineItemId },
-                    { "id", ResultsController.ResultId }
+                    { "id", LineItemsController.ResultId }
                 },
                 RouteTable.Routes,
                 Request.RequestContext, false);
