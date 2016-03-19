@@ -260,8 +260,36 @@ namespace SimpleLti.Controllers
                             break;
                     }
                     break;
+                case "Get LineItemResults (Read)":
+                    var getLineItemResultsResponse = await OutcomesClient.GetLineItemWithResults(
+                        model.LineItemServiceUrl,
+                        model.ConsumerKey,
+                        model.ConsumerSecret);
+                    model.HttpRequest = getLineItemResultsResponse.HttpRequest;
+                    model.HttpResponse = getLineItemResultsResponse.HttpResponse;
+                    switch (getLineItemResultsResponse.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            model.LineItem = getLineItemResultsResponse.Outcome;
+                            ModelState.Clear();
+                            ViewBag.Message = "200 LineItem received";
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            ViewBag.Message = "401 Not authorized";
+                            break;
+                        case HttpStatusCode.NotFound:
+                            ViewBag.Message = "404 Not found";
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            ViewBag.Message = "500 Internal server error";
+                            break;
+                        default:
+                            ViewBag.Message = Convert.ToInt32(getLineItemResultsResponse.StatusCode) + " " + getLineItemResultsResponse.StatusCode;
+                            break;
+                    }
+                    break;
                 case "Get LineItems (Read)":
-                    var getLineItemsResponse = await OutcomesClient.GetLineItemPage(
+                    var getLineItemsResponse = await OutcomesClient.GetLineItems(
                         model.LineItemsServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret,
@@ -293,20 +321,7 @@ namespace SimpleLti.Controllers
                         ReportingMethod = "totalScore",
                         LineItemOf = new Context { ContextId = model.ContextId},
                         AssignedActivity = new Activity { ActivityId = model.LineItem.AssignedActivity.ActivityId},
-                        ScoreContraints = new NumericLimits {  NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110},
-                        Result = new []
-                        {
-                            new LisResult
-                            {
-                                Comment = "Good job!",
-                                ResultAgent = new LisPerson { UserId = "12345"},
-                                ResultOf = new Uri(model.LineItemServiceUrl),
-                                ResultScore = "0.75",
-                                ResultScoreConstraints = new NumericLimits { TotalMaximum = 1 },
-                                ResultStatus = ResultStatus.Final,
-                                TotalScore = (decimal?) 0.75
-                            }
-                        }
+                        ScoreContraints = new NumericLimits {  NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110}
                     };
                     var postLineItemResponse = await OutcomesClient.PostLineItem(
                         postLineItem,
@@ -369,6 +384,166 @@ namespace SimpleLti.Controllers
                             break;
                         default:
                             ViewBag.Message = Convert.ToInt32(putLineItemResponse.StatusCode) + " " + putLineItemResponse.StatusCode;
+                            break;
+                    }
+                    break;
+                case "Delete Result (Delete)":
+                    var deleteResultResponse = await OutcomesClient.DeleteResult(
+                        model.ResultServiceUrl,
+                        model.ConsumerKey,
+                        model.ConsumerSecret);
+                    model.HttpRequest = deleteResultResponse.HttpRequest;
+                    model.HttpResponse = deleteResultResponse.HttpResponse;
+                    switch (deleteResultResponse.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            model.LineItem = null;
+                            ModelState.Clear();
+                            ViewBag.Message = "200 Result deleted";
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            ViewBag.Message = "401 Not authorized";
+                            break;
+                        case HttpStatusCode.NotFound:
+                            ViewBag.Message = "404 Not found";
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            ViewBag.Message = "500 Internal server error";
+                            break;
+                        default:
+                            ViewBag.Message = Convert.ToInt32(deleteResultResponse.StatusCode) + " " + deleteResultResponse.StatusCode;
+                            break;
+                    }
+                    break;
+                case "Get Result (Read)":
+                    var getResultResponse = await OutcomesClient.GetResult(
+                        model.ResultServiceUrl,
+                        model.ConsumerKey,
+                        model.ConsumerSecret);
+                    model.HttpRequest = getResultResponse.HttpRequest;
+                    model.HttpResponse = getResultResponse.HttpResponse;
+                    switch (getResultResponse.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            model.Result = getResultResponse.Outcome;
+                            ModelState.Clear();
+                            ViewBag.Message = "200 LineItem received";
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            ViewBag.Message = "401 Not authorized";
+                            break;
+                        case HttpStatusCode.NotFound:
+                            ViewBag.Message = "404 Not found";
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            ViewBag.Message = "500 Internal server error";
+                            break;
+                        default:
+                            ViewBag.Message = Convert.ToInt32(getResultResponse.StatusCode) + " " + getResultResponse.StatusCode;
+                            break;
+                    }
+                    break;
+                case "Get Results (Read)":
+                    var getResultsResponse = await OutcomesClient.GetResults(
+                        model.ResultsServiceUrl,
+                        model.ConsumerKey,
+                        model.ConsumerSecret);
+                    model.HttpRequest = getResultsResponse.HttpRequest;
+                    model.HttpResponse = getResultsResponse.HttpResponse;
+                    switch (getResultsResponse.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            ViewBag.Message = "200 Results received";
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            ViewBag.Message = "401 Not authorized";
+                            break;
+                        case HttpStatusCode.NotFound:
+                            ViewBag.Message = "404 Not found";
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            ViewBag.Message = "500 Internal server error";
+                            break;
+                        default:
+                            ViewBag.Message = Convert.ToInt32(getResultsResponse.StatusCode) + " " + getResultsResponse.StatusCode;
+                            break;
+                    }
+                    break;
+                case "Post Result (Create)":
+                    var postResult =
+                        new LisResult
+                        {
+                            Comment = "Good job!",
+                            ResultAgent = new LisPerson {UserId = "12345"},
+                            ResultOf = new Uri(model.LineItemServiceUrl),
+                            ResultScore = "0.75",
+                            ResultScoreConstraints = new NumericLimits {TotalMaximum = 1},
+                            ResultStatus = ResultStatus.Completed,
+                            TotalScore = (decimal?) 0.75
+                        };
+                    var postResultResponse = await OutcomesClient.PostResult(
+                        postResult,
+                        model.ResultServiceUrl,
+                        model.ConsumerKey,
+                        model.ConsumerSecret);
+                    model.HttpRequest = postResultResponse.HttpRequest;
+                    model.HttpResponse = postResultResponse.HttpResponse;
+                    switch (postResultResponse.StatusCode)
+                    {
+                        case HttpStatusCode.Created:
+                            //model.LineItem = postResult.Outcome;
+                            ModelState.Clear();
+                            ViewBag.Message = "201 Result added";
+                            break;
+                        case HttpStatusCode.BadRequest:
+                            ViewBag.Message = "400 Bad Request";
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            ViewBag.Message = "401 Not authorized";
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            ViewBag.Message = "500 Internal server error";
+                            break;
+                        default:
+                            ViewBag.Message = Convert.ToInt32(postResultResponse.StatusCode) + " " + postResultResponse.StatusCode;
+                            break;
+                    }
+                    break;
+                case "Put Result (Update)":
+                    var putResult =
+                        new LisResult
+                        {
+                            Comment = "Good job!",
+                            ResultAgent = new LisPerson { UserId = "12345" },
+                            ResultOf = new Uri(model.LineItemServiceUrl),
+                            ResultScore = "0.75",
+                            ResultScoreConstraints = new NumericLimits { TotalMaximum = 1 },
+                            ResultStatus = ResultStatus.Final, // Change the status to Final
+                            TotalScore = (decimal?)0.75
+                        };
+                    var putResultResponse = await OutcomesClient.PutResult(
+                        putResult,
+                        model.ResultServiceUrl,
+                        model.ConsumerKey,
+                        model.ConsumerSecret);
+                    model.HttpRequest = putResultResponse.HttpRequest;
+                    model.HttpResponse = putResultResponse.HttpResponse;
+                    switch (putResultResponse.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            ViewBag.Message = "200 Result updated";
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            ViewBag.Message = "401 Not authorized";
+                            break;
+                        case HttpStatusCode.NotFound:
+                            ViewBag.Message = "404 Not found";
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            ViewBag.Message = "500 Internal server error";
+                            break;
+                        default:
+                            ViewBag.Message = Convert.ToInt32(putResultResponse.StatusCode) + " " + putResultResponse.StatusCode;
                             break;
                     }
                     break;
