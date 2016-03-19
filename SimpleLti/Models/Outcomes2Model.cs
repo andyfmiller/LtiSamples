@@ -10,6 +10,7 @@ namespace SimpleLti.Models
         public LineItem LineItem { get; set; }
         public string LineItemServiceUrl { get; set; }
         public string LineItemsServiceUrl { get; set; }
+        public LisResult Result { get; set; }
         public string ResultServiceUrl { get; set; }
         public string ResultsServiceUrl { get; set; }
         public string HttpRequest { get; set; }
