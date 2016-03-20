@@ -138,6 +138,7 @@
     <Compile Include="Controllers\ConsumerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LineItemsController.cs" />
+    <Compile Include="Controllers\OAuthHeaderAuthenticationAttribute.cs" />
     <Compile Include="Controllers\OutcomesController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
     <Compile Include="Controllers\ResultsController.cs" />

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using LtiLibrary.AspNet.Outcomes.v2;
@@ -8,6 +7,7 @@ using LtiLibrary.Core.Outcomes.v2;
 
 namespace SimpleLti.Controllers
 {
+    [OAuthHeaderAuthentication]
     public class LineItemsController : LineItemsControllerBase
     {
         // Simple "database" of lineitems for demonstration purposes
@@ -57,7 +57,7 @@ namespace SimpleLti.Controllers
                 OnGetLineItem(context);
                 if (context.LineItem != null && Result != null)
                 {
-                    context.LineItem.Result = new[] {Result};
+                    context.LineItem.Result = Result == null ? new LisResult[] {} : new[] {Result};
                 }
                 return Task.FromResult<object>(null);
             };
@@ -106,7 +106,6 @@ namespace SimpleLti.Controllers
             };
 
             // Update LineItem (but not results)
-            //TODO: Do something with results passed in
             OnPutLineItem = context =>
             {
                 if (context.LineItem == null || LineItem == null || !LineItem.Id.Equals(context.LineItem.Id))
@@ -115,6 +114,7 @@ namespace SimpleLti.Controllers
                 }
                 else
                 {
+                    context.LineItem.Result = LineItem.Result;
                     LineItem = context.LineItem;
                     context.StatusCode = HttpStatusCode.OK;
                 }
@@ -122,7 +122,6 @@ namespace SimpleLti.Controllers
             };
 
             // Update LineItem and Result
-            //TODO: Update Result?
             OnPutLineItemWithResults = context =>
             {
                 if (context.LineItem == null || LineItem == null || !LineItem.Id.Equals(context.LineItem.Id))
@@ -132,6 +131,10 @@ namespace SimpleLti.Controllers
                 else
                 {
                     LineItem = context.LineItem;
+                    if (context.LineItem.Result != null && context.LineItem.Result.Length > 0)
+                    {
+                        Result = context.LineItem.Result[0];
+                    }
                     context.StatusCode = HttpStatusCode.OK;
                 }
                 return Task.FromResult<object>(null);

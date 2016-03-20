@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Web.Mvc;
+using LtiLibrary.Core.OAuth;
 
 namespace ConsumerCertification.Controllers
 {
@@ -100,6 +101,8 @@ results_url=$Results.url";
         {
             if (ModelState.IsValid)
             {
+                // Store the secret to LineItemsController and ResultsController can authenticate requests
+                HttpContext.Application["ConsumerSecret"] = model.ConsumerSecret;
                 return RedirectToAction("TestSuite", "Lti1", new { Url = model.Url, ConsumerKey = model.ConsumerKey, ConsumerSecret = model.ConsumerSecret });
             }
             return View(model);
@@ -120,7 +123,7 @@ results_url=$Results.url";
             request.LineItemServiceUrl = GetLineItemsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId);
             request.LineItemsServiceUrl = GetLineItemsServiceUrl(LineItemsController.ContextId);
             request.LisOutcomeServiceUrl = GetLisOutcomeServiceUrl();
-            request.ResultServiceUrl = GetResultsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId, ResultsController.ResultId);
+            request.ResultServiceUrl = GetResultsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId, LineItemsController.ResultId);
             request.ResultsServiceUrl = GetResultsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId);
             request.ToolConsumerInfoProductFamilyCode = "LtiLibrary";
             request.ToolConsumerInfoVersion = "1";

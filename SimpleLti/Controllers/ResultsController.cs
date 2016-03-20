@@ -7,6 +7,7 @@ using LtiLibrary.Core.Outcomes.v2;
 
 namespace SimpleLti.Controllers
 {
+    [OAuthHeaderAuthentication]
     public class ResultsController : ResultsControllerBase
     {
         public ResultsController()
@@ -29,6 +30,10 @@ namespace SimpleLti.Controllers
 
             OnGetResult = context =>
             {
+                // https://www.imsglobal.org/specs/ltiomv2p0/specification-3
+                // When a line item is created, a result for each user is deemed to be created with a status value of “Initialized”.  
+                // Thus, there is no need to actually create a result with a POST request; the first connection to a result may be a PUT or a GET request.
+
                 var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, context.LineItemId);
                 var resultUri = RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, context.LineItemId, context.Id);
 
@@ -38,9 +43,6 @@ namespace SimpleLti.Controllers
                 }
                 else if (LineItemsController.Result == null || !LineItemsController.Result.Id.Equals(resultUri))
                 {
-                    // https://www.imsglobal.org/specs/ltiomv2p0/specification-3
-                    // When a line item is created, a result for each user is deemed to be created with a status value of “Initialized”.  
-                    // Thus, there is no need to actually create a result with a POST request; the first connection to a result may be a PUT or a GET request.
                     context.Result = new LisResult
                     {
                         ExternalContextId = LtiConstants.ResultContextId,
@@ -116,10 +118,6 @@ namespace SimpleLti.Controllers
                 if (LineItemsController.LineItem == null || !LineItemsController.LineItem.Id.Equals(lineItemUri))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
-                }
-                else if (!LineItemsController.LineItem.Id.Equals(context.Result.ResultOf))
-                {
-                    context.StatusCode = HttpStatusCode.BadRequest;
                 }
                 else
                 {

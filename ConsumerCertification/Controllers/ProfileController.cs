@@ -82,18 +82,6 @@ namespace ConsumerCertification.Controllers
                     HttpContext.Current.Request.RequestContext, false);
                 Uri outcomesServiceUri;
 
-                // Outcomes 2 LineItems service
-                var lineitemsUrl = UrlHelper.GenerateUrl("DefaultApi", null, "LineItems",
-                    new RouteValueDictionary { { "httproute", string.Empty } }, RouteTable.Routes,
-                    HttpContext.Current.Request.RequestContext, false);
-                Uri lineitemsServiceUri;
-
-                // Outcomes 2 Results service
-                var resultsUrl = UrlHelper.GenerateUrl("DefaultApi", null, "Results",
-                    new RouteValueDictionary { { "httproute", string.Empty } }, RouteTable.Routes,
-                    HttpContext.Current.Request.RequestContext, false);
-                Uri resultsServiceUri;
-
                 profile.ServiceOffered = new[]
                 {
                     new RestService
@@ -102,20 +90,6 @@ namespace ConsumerCertification.Controllers
                         EndPoint = Uri.TryCreate(Request.RequestUri, outcomesUrl, out outcomesServiceUri) ? outcomesServiceUri : null,
                         Format = new[] {LtiConstants.OutcomeMediaType}
                     },
-                    new RestService
-                    {
-                        Id = new Uri("tcp:LineItem.collection"),
-                        Action = new[] {"GET", "POST"},
-                        EndPoint = Uri.TryCreate(Request.RequestUri, lineitemsUrl, out lineitemsServiceUri) ? lineitemsServiceUri : null,
-                        Format = new[] {LtiConstants.LisResultContainerMediaType}
-                    },
-                    new RestService
-                    {
-                        Id = new Uri("tcp:LineItem.item"),
-                        Action = new[] {"GET", "PUT", "DELETE"},
-                        EndPoint = Uri.TryCreate(Request.RequestUri, lineitemsUrl, out lineitemsServiceUri) ? lineitemsServiceUri : null,
-                        Format = new[] {LtiConstants.LisResultMediaType}
-                    }
                 };
 
                 context.ToolConsumerProfile = profile;

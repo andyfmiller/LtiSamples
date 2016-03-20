@@ -7,12 +7,15 @@ using LtiLibrary.Core.Outcomes.v2;
 
 namespace ConsumerCertification.Controllers
 {
+    [OAuthHeaderAuthentication]
     public class LineItemsController : LineItemsControllerBase
     {
         // Simple "database" of lineitems for demonstration purposes
         public const string ContextId = "course-1";
         public const string LineItemId = "lineitem-1";
-        private static LineItem _lineItem;
+        public const string ResultId = "result-1";
+        public static LineItem LineItem;
+        public static LisResult Result;
 
         public LineItemsController()
         {
@@ -20,13 +23,14 @@ namespace ConsumerCertification.Controllers
             {
                 var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), ContextId, context.Id);
 
-                if (lineItemUri == null || _lineItem == null)
+                if (LineItem == null || !LineItem.Id.Equals(lineItemUri))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    _lineItem = null;
+                    LineItem = null;
+                    Result = null;
                     context.StatusCode = HttpStatusCode.OK;
                 }
                 return Task.FromResult<object>(null);
@@ -36,50 +40,58 @@ namespace ConsumerCertification.Controllers
             {
                 var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, context.Id);
 
-                if (lineItemUri == null || _lineItem == null)
+                if (LineItem == null || !LineItem.Id.Equals(lineItemUri))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    context.LineItem = _lineItem;
+                    context.LineItem = LineItem;
                     context.StatusCode = HttpStatusCode.OK;
+                }
+                return Task.FromResult<object>(null);
+            };
+
+            OnGetLineItemWithResults = context =>
+            {
+                OnGetLineItem(context);
+                if (context.LineItem != null && Result != null)
+                {
+                    context.LineItem.Result = Result == null ? new LisResult[] {} : new[] {Result};
                 }
                 return Task.FromResult<object>(null);
             };
 
             OnGetLineItems = context =>
             {
-                if (_lineItem == null ||
-                    (!string.IsNullOrEmpty(context.ActivityId) &&
-                     !context.ActivityId.Equals(_lineItem.AssignedActivity.ActivityId)))
+                context.LineItemContainerPage = new LineItemContainerPage
                 {
-                    context.StatusCode = HttpStatusCode.NotFound;
-                }
-                else
-                {
-                    context.LineItemContainerPage = new LineItemContainerPage
+                    ExternalContextId = LtiConstants.LineItemContainerContextId,
+                    Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId),
+                    LineItemContainer = new LineItemContainer
                     {
-                        ExternalContextId = LtiConstants.LineItemContainerContextId,
-                        Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId),
-                        LineItemContainer = new LineItemContainer
+                        MembershipSubject = new LineItemMembershipSubject
                         {
-                            MembershipSubject = new LineItemMembershipSubject
-                            {
-                                ContextId = context.ContextId,
-                                LineItems = new[] { _lineItem }
-                            }
+                            ContextId = context.ContextId,
+                            LineItems = new LineItem[] { }
                         }
-                    };
-                    context.StatusCode = HttpStatusCode.OK;
+                    }
+                };
+
+                if (LineItem != null &&
+                    (string.IsNullOrEmpty(context.ActivityId) ||
+                     context.ActivityId.Equals(LineItem.AssignedActivity.ActivityId)))
+                {
+                    context.LineItemContainerPage.LineItemContainer.MembershipSubject.LineItems = new[] {LineItem};
                 }
+                context.StatusCode = HttpStatusCode.OK;
                 return Task.FromResult<object>(null);
             };
 
             // Create a LineItem
             OnPostLineItem = context =>
             {
-                if (_lineItem != null)
+                if (LineItem != null)
                 {
                     context.StatusCode = HttpStatusCode.BadRequest;
                     return Task.FromResult<object>(null);
@@ -88,20 +100,41 @@ namespace ConsumerCertification.Controllers
                 // Normally LineItem.Id would be calculated based on an id assigned by the database
                 context.LineItem.Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, LineItemId); 
                 context.LineItem.Results = RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, LineItemId);
-                _lineItem = context.LineItem;
+                LineItem = context.LineItem;
                 context.StatusCode = HttpStatusCode.Created;
                 return Task.FromResult<object>(null);
             };
 
+            // Update LineItem (but not results)
             OnPutLineItem = context =>
             {
-                if (context.LineItem == null || _lineItem == null || !_lineItem.Id.Equals(context.LineItem.Id))
+                if (context.LineItem == null || LineItem == null || !LineItem.Id.Equals(context.LineItem.Id))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    _lineItem = context.LineItem;
+                    context.LineItem.Result = LineItem.Result;
+                    LineItem = context.LineItem;
+                    context.StatusCode = HttpStatusCode.OK;
+                }
+                return Task.FromResult<object>(null);
+            };
+
+            // Update LineItem and Result
+            OnPutLineItemWithResults = context =>
+            {
+                if (context.LineItem == null || LineItem == null || !LineItem.Id.Equals(context.LineItem.Id))
+                {
+                    context.StatusCode = HttpStatusCode.NotFound;
+                }
+                else
+                {
+                    LineItem = context.LineItem;
+                    if (context.LineItem.Result != null && context.LineItem.Result.Length > 0)
+                    {
+                        Result = context.LineItem.Result[0];
+                    }
                     context.StatusCode = HttpStatusCode.OK;
                 }
                 return Task.FromResult<object>(null);
