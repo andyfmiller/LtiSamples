@@ -16,13 +16,13 @@ namespace ConsumerCertification.Controllers
             {
                 var resultUri = RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, context.LineItemId, context.Id);
 
-                if (resultUri == null || LineItemsController.Result == null)
+                if (resultUri == null || InMemoryDb.Result == null)
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    LineItemsController.Result = null;
+                    InMemoryDb.Result = null;
                     context.StatusCode = HttpStatusCode.OK;
                 }
                 return Task.FromResult<object>(null);
@@ -37,11 +37,11 @@ namespace ConsumerCertification.Controllers
                 var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, context.LineItemId);
                 var resultUri = RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, context.LineItemId, context.Id);
 
-                if (LineItemsController.LineItem == null || !LineItemsController.LineItem.Id.Equals(lineItemUri))
+                if (InMemoryDb.LineItem == null || !InMemoryDb.LineItem.Id.Equals(lineItemUri))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
-                else if (LineItemsController.Result == null || !LineItemsController.Result.Id.Equals(resultUri))
+                else if (InMemoryDb.Result == null || !InMemoryDb.Result.Id.Equals(resultUri))
                 {
                     context.Result = new LisResult
                     {
@@ -54,7 +54,7 @@ namespace ConsumerCertification.Controllers
                 }
                 else
                 {
-                    context.Result = LineItemsController.Result;
+                    context.Result = InMemoryDb.Result;
                     context.StatusCode = HttpStatusCode.OK;
                 }
                 return Task.FromResult<object>(null);
@@ -64,7 +64,7 @@ namespace ConsumerCertification.Controllers
             {
                 var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current),
                     context.ContextId, context.LineItemId);
-                if (LineItemsController.LineItem == null || !LineItemsController.LineItem.Id.Equals(lineItemUri))
+                if (InMemoryDb.LineItem == null || !InMemoryDb.LineItem.Id.Equals(lineItemUri))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
@@ -78,7 +78,7 @@ namespace ConsumerCertification.Controllers
                         {
                             MembershipSubject = new ResultMembershipSubject
                             {
-                                Results = LineItemsController.Result == null ? new LisResult[] {} : new[] { LineItemsController.Result }
+                                Results = InMemoryDb.Result == null ? new LisResult[] {} : new[] { InMemoryDb.Result }
                             }
                         }
                     };
@@ -91,16 +91,16 @@ namespace ConsumerCertification.Controllers
             {
                 var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current),
                     context.ContextId, context.LineItemId);
-                if (LineItemsController.LineItem == null || !LineItemsController.LineItem.Id.Equals(lineItemUri))
+                if (InMemoryDb.LineItem == null || !InMemoryDb.LineItem.Id.Equals(lineItemUri))
                 {
                     context.StatusCode = HttpStatusCode.BadRequest;
                 }
                 else
                 {
-                    LineItemsController.Result = context.Result;
-                    LineItemsController.Result.Id = RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current),
-                        context.ContextId, context.LineItemId, LineItemsController.ResultId);
-                    context.Result = LineItemsController.Result;
+                    InMemoryDb.Result = context.Result;
+                    InMemoryDb.Result.Id = RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current),
+                        context.ContextId, context.LineItemId, InMemoryDb.ResultId);
+                    context.Result = InMemoryDb.Result;
                     context.StatusCode = HttpStatusCode.Created;
                 }
                 return Task.FromResult<object>(null);
@@ -115,19 +115,19 @@ namespace ConsumerCertification.Controllers
 
                 var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current),
                     context.ContextId, context.LineItemId);
-                if (LineItemsController.LineItem == null || !LineItemsController.LineItem.Id.Equals(lineItemUri))
+                if (InMemoryDb.LineItem == null || !InMemoryDb.LineItem.Id.Equals(lineItemUri))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
                     // If this is the first connection, the PUT is equivalent to a POST
-                    LineItemsController.Result = context.Result;
+                    InMemoryDb.Result = context.Result;
                     if (context.Result.Id == null)
                     {
-                        LineItemsController.Result.Id =
+                        InMemoryDb.Result.Id =
                             RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current),
-                                context.ContextId, context.LineItemId, LineItemsController.ResultId);
+                                context.ContextId, context.LineItemId, InMemoryDb.ResultId);
                     }
                     context.StatusCode = HttpStatusCode.OK;
                 }

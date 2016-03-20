@@ -129,6 +129,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\InMemoryDb.cs" />
     <Compile Include="Controllers\LineItemsController.cs" />
     <Compile Include="Controllers\Lti1Controller.cs" />
     <Compile Include="Controllers\OAuthHeaderAuthenticationAttribute.cs" />

@@ -10,27 +10,20 @@ namespace ConsumerCertification.Controllers
     [OAuthHeaderAuthentication]
     public class LineItemsController : LineItemsControllerBase
     {
-        // Simple "database" of lineitems for demonstration purposes
-        public const string ContextId = "course-1";
-        public const string LineItemId = "lineitem-1";
-        public const string ResultId = "result-1";
-        public static LineItem LineItem;
-        public static LisResult Result;
-
         public LineItemsController()
         {
             OnDeleteLineItem = context =>
             {
-                var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), ContextId, context.Id);
+                var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), InMemoryDb.ContextId, context.Id);
 
-                if (LineItem == null || !LineItem.Id.Equals(lineItemUri))
+                if (InMemoryDb.LineItem == null || !InMemoryDb.LineItem.Id.Equals(lineItemUri))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    LineItem = null;
-                    Result = null;
+                    InMemoryDb.LineItem = null;
+                    InMemoryDb.Result = null;
                     context.StatusCode = HttpStatusCode.OK;
                 }
                 return Task.FromResult<object>(null);
@@ -40,13 +33,13 @@ namespace ConsumerCertification.Controllers
             {
                 var lineItemUri = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, context.Id);
 
-                if (LineItem == null || !LineItem.Id.Equals(lineItemUri))
+                if (InMemoryDb.LineItem == null || !InMemoryDb.LineItem.Id.Equals(lineItemUri))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    context.LineItem = LineItem;
+                    context.LineItem = InMemoryDb.LineItem;
                     context.StatusCode = HttpStatusCode.OK;
                 }
                 return Task.FromResult<object>(null);
@@ -55,9 +48,9 @@ namespace ConsumerCertification.Controllers
             OnGetLineItemWithResults = context =>
             {
                 OnGetLineItem(context);
-                if (context.LineItem != null && Result != null)
+                if (context.LineItem != null && InMemoryDb.Result != null)
                 {
-                    context.LineItem.Result = Result == null ? new LisResult[] {} : new[] {Result};
+                    context.LineItem.Result = InMemoryDb.Result == null ? new LisResult[] {} : new[] {InMemoryDb.Result};
                 }
                 return Task.FromResult<object>(null);
             };
@@ -78,11 +71,11 @@ namespace ConsumerCertification.Controllers
                     }
                 };
 
-                if (LineItem != null &&
+                if (InMemoryDb.LineItem != null &&
                     (string.IsNullOrEmpty(context.ActivityId) ||
-                     context.ActivityId.Equals(LineItem.AssignedActivity.ActivityId)))
+                     context.ActivityId.Equals(InMemoryDb.LineItem.AssignedActivity.ActivityId)))
                 {
-                    context.LineItemContainerPage.LineItemContainer.MembershipSubject.LineItems = new[] {LineItem};
+                    context.LineItemContainerPage.LineItemContainer.MembershipSubject.LineItems = new[] {InMemoryDb.LineItem};
                 }
                 context.StatusCode = HttpStatusCode.OK;
                 return Task.FromResult<object>(null);
@@ -91,16 +84,16 @@ namespace ConsumerCertification.Controllers
             // Create a LineItem
             OnPostLineItem = context =>
             {
-                if (LineItem != null)
+                if (InMemoryDb.LineItem != null)
                 {
                     context.StatusCode = HttpStatusCode.BadRequest;
                     return Task.FromResult<object>(null);
                 }
 
                 // Normally LineItem.Id would be calculated based on an id assigned by the database
-                context.LineItem.Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, LineItemId); 
-                context.LineItem.Results = RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, LineItemId);
-                LineItem = context.LineItem;
+                context.LineItem.Id = RoutingHelper.GetLineItemsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, InMemoryDb.LineItemId); 
+                context.LineItem.Results = RoutingHelper.GetResultsUri(new HttpContextWrapper(HttpContext.Current), context.ContextId, InMemoryDb.LineItemId);
+                InMemoryDb.LineItem = context.LineItem;
                 context.StatusCode = HttpStatusCode.Created;
                 return Task.FromResult<object>(null);
             };
@@ -108,14 +101,14 @@ namespace ConsumerCertification.Controllers
             // Update LineItem (but not results)
             OnPutLineItem = context =>
             {
-                if (context.LineItem == null || LineItem == null || !LineItem.Id.Equals(context.LineItem.Id))
+                if (context.LineItem == null || InMemoryDb.LineItem == null || !InMemoryDb.LineItem.Id.Equals(context.LineItem.Id))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    context.LineItem.Result = LineItem.Result;
-                    LineItem = context.LineItem;
+                    context.LineItem.Result = InMemoryDb.LineItem.Result;
+                    InMemoryDb.LineItem = context.LineItem;
                     context.StatusCode = HttpStatusCode.OK;
                 }
                 return Task.FromResult<object>(null);
@@ -124,16 +117,16 @@ namespace ConsumerCertification.Controllers
             // Update LineItem and Result
             OnPutLineItemWithResults = context =>
             {
-                if (context.LineItem == null || LineItem == null || !LineItem.Id.Equals(context.LineItem.Id))
+                if (context.LineItem == null || InMemoryDb.LineItem == null || !InMemoryDb.LineItem.Id.Equals(context.LineItem.Id))
                 {
                     context.StatusCode = HttpStatusCode.NotFound;
                 }
                 else
                 {
-                    LineItem = context.LineItem;
+                    InMemoryDb.LineItem = context.LineItem;
                     if (context.LineItem.Result != null && context.LineItem.Result.Length > 0)
                     {
-                        Result = context.LineItem.Result[0];
+                        InMemoryDb.Result = context.LineItem.Result[0];
                     }
                     context.StatusCode = HttpStatusCode.OK;
                 }

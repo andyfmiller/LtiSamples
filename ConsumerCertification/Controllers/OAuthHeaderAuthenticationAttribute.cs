@@ -61,7 +61,7 @@ namespace ConsumerCertification.Controllers
 
             // Recalculate the signature
             var body = await context.Request.Content.ReadAsByteArrayAsync();
-            var secret = HttpContext.Current.Application["ConsumerSecret"].ToString();
+            var secret = InMemoryDb.ConsumerSecret;
             var signature = GetSignature(context.Request, body, nonce, timestamp, consumerKey, secret);
 
             if (!signatureIn.Equals(signature))

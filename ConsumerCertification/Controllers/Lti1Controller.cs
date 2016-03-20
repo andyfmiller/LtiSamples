@@ -102,7 +102,10 @@ results_url=$Results.url";
             if (ModelState.IsValid)
             {
                 // Store the secret to LineItemsController and ResultsController can authenticate requests
-                HttpContext.Application["ConsumerSecret"] = model.ConsumerSecret;
+                InMemoryDb.ConsumerSecret = model.ConsumerSecret;
+                InMemoryDb.LineItem = null;
+                InMemoryDb.Result = null;
+
                 return RedirectToAction("TestSuite", "Lti1", new { Url = model.Url, ConsumerKey = model.ConsumerKey, ConsumerSecret = model.ConsumerSecret });
             }
             return View(model);
@@ -120,11 +123,11 @@ results_url=$Results.url";
             request.LaunchPresentationHeight = 300;
             request.LaunchPresentationCssUrl = GetLaunchPresentationCssUrl();
             request.LaunchPresentationReturnUrl = Request.Url.AbsoluteUri;
-            request.LineItemServiceUrl = GetLineItemsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId);
-            request.LineItemsServiceUrl = GetLineItemsServiceUrl(LineItemsController.ContextId);
+            request.LineItemServiceUrl = GetLineItemsServiceUrl(InMemoryDb.ContextId, InMemoryDb.LineItemId);
+            request.LineItemsServiceUrl = GetLineItemsServiceUrl(InMemoryDb.ContextId);
             request.LisOutcomeServiceUrl = GetLisOutcomeServiceUrl();
-            request.ResultServiceUrl = GetResultsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId, LineItemsController.ResultId);
-            request.ResultsServiceUrl = GetResultsServiceUrl(LineItemsController.ContextId, LineItemsController.LineItemId);
+            request.ResultServiceUrl = GetResultsServiceUrl(InMemoryDb.ContextId, InMemoryDb.LineItemId, InMemoryDb.ResultId);
+            request.ResultsServiceUrl = GetResultsServiceUrl(InMemoryDb.ContextId, InMemoryDb.LineItemId);
             request.ToolConsumerInfoProductFamilyCode = "LtiLibrary";
             request.ToolConsumerInfoVersion = "1";
             request.ToolConsumerProfileUrl = GetToolConsumerProfileUrl();
