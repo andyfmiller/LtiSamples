@@ -17,9 +17,9 @@
 
 @if (Model != null && !string.IsNullOrEmpty(Model.LtiRequest.LisOutcomeServiceUrl))
 {
-    <h2>Basic Outcomes Service</h2>
+    <h2>Outcomes 1.0</h2>
     <p>
-        The Tool Consumer that sent this launch request is hosting the LTI 1.x Outcomes Service.
+        The Tool Consumer that sent this launch request is hosting the LTI Outcomes 1.0 Management Service.
         Click @Html.ActionLink("here to send a grade back via the LTI Outcomes Service.",
             "Outcomes1",
             new
@@ -36,9 +36,9 @@
 
 @if (Model != null)
 {
-    <h2>Outcomes V2 Service</h2>
+    <h2>Outcomes 2.0</h2>
     <p>
-        The Tool Consumer that sent this launch request supports the Outcomes Management V2.
+        The Tool Consumer that sent this launch request supports the LTI Outcomes 2.0 Management Service.
         Click @Html.ActionLink("here to send a grade back via the LTI Outcomes Service.",
             "Outcomes2",
             new
