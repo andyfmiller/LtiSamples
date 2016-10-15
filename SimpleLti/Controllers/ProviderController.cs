@@ -100,12 +100,12 @@ namespace SimpleLti.Controllers
         /// The Outcomes service is hosted by the Tool Consumer. The Tool Provider call the Outcomes service.
         /// </remarks>
         [HttpPost]
-        public ActionResult Outcomes1(Outcomes1Model model, string submit)
+        public async Task<ActionResult> Outcomes1(Outcomes1Model model, string submit)
         {
             switch (submit)
             {
                 case "Send Grade":
-                    if (LtiLibrary.Core.Outcomes.v1.OutcomesClient.PostScore(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
+                    if (await LtiLibrary.Core.Outcomes.v1.OutcomesClient.PostScore(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
                         model.LisResultSourcedId, model.Score))
                     {
                         ViewBag.Message = "Grade sent";
@@ -116,7 +116,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Read Grade":
-                    var lisResult = LtiLibrary.Core.Outcomes.v1.OutcomesClient.ReadScore(model.LisOutcomeServiceUrl, model.ConsumerKey,
+                    var lisResult = await LtiLibrary.Core.Outcomes.v1.OutcomesClient.ReadScore(model.LisOutcomeServiceUrl, model.ConsumerKey,
                         model.ConsumerSecret, model.LisResultSourcedId);
                     if (lisResult.IsValid)
                     {
@@ -129,7 +129,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Delete Grade":
-                    if (LtiLibrary.Core.Outcomes.v1.OutcomesClient.DeleteScore(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
+                    if (await LtiLibrary.Core.Outcomes.v1.OutcomesClient.DeleteScore(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
                         model.LisResultSourcedId))
                     {
                         model.Score = null;
