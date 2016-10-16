@@ -427,7 +427,7 @@ namespace SimpleLti.Controllers
                         case HttpStatusCode.OK:
                             model.Result = getResultResponse.Outcome;
                             ModelState.Clear();
-                            ViewBag.Message = "200 LineItem received";
+                            ViewBag.Message = "200 Result received";
                             break;
                         case HttpStatusCode.Unauthorized:
                             ViewBag.Message = "401 Not authorized";
