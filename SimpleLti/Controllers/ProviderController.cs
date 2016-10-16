@@ -105,7 +105,7 @@ namespace SimpleLti.Controllers
             switch (submit)
             {
                 case "Send Grade":
-                    if (await LtiLibrary.Core.Outcomes.v1.OutcomesClient.PostScore(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
+                    if (await LtiLibrary.Core.Outcomes.v1.OutcomesClient.PostScoreAsync(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
                         model.LisResultSourcedId, model.Score))
                     {
                         ViewBag.Message = "Grade sent";
@@ -116,7 +116,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Read Grade":
-                    var lisResult = await LtiLibrary.Core.Outcomes.v1.OutcomesClient.ReadScore(model.LisOutcomeServiceUrl, model.ConsumerKey,
+                    var lisResult = await LtiLibrary.Core.Outcomes.v1.OutcomesClient.ReadScoreAsync(model.LisOutcomeServiceUrl, model.ConsumerKey,
                         model.ConsumerSecret, model.LisResultSourcedId);
                     if (lisResult.IsValid)
                     {
@@ -129,7 +129,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Delete Grade":
-                    if (await LtiLibrary.Core.Outcomes.v1.OutcomesClient.DeleteScore(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
+                    if (await LtiLibrary.Core.Outcomes.v1.OutcomesClient.DeleteScoreAsync(model.LisOutcomeServiceUrl, model.ConsumerKey, model.ConsumerSecret,
                         model.LisResultSourcedId))
                     {
                         model.Score = null;
