@@ -20,8 +20,7 @@ namespace ConsumerCertification.Controllers
         /// <returns>True if the score is deleted.</returns>
         protected override bool DeleteResult(string lisResultSourcedId)
         {
-            // Only valid SourcedId values are "1", "2", and "3" (see Lti1Controller)
-            if (lisResultSourcedId.Equals("1") || lisResultSourcedId.Equals("2") || lisResultSourcedId.Equals("3"))
+            if (LisResultSourcedIdIsValid(lisResultSourcedId))
             {
                 _lisResult = null;
                 return true;
@@ -36,8 +35,7 @@ namespace ConsumerCertification.Controllers
         /// <returns>The LisResult representing the score.</returns>
         protected override LisResult ReadResult(string lisResultSourcedId)
         {
-            // Only valid SourcedId values are "1", "2", and "3" (see Lti1Controller)
-            if (lisResultSourcedId.Equals("1") || lisResultSourcedId.Equals("2") || lisResultSourcedId.Equals("3"))
+            if (LisResultSourcedIdIsValid(lisResultSourcedId))
             {
                 if (_lisResult == null || !lisResultSourcedId.Equals(_lisResult.SourcedId, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -55,8 +53,7 @@ namespace ConsumerCertification.Controllers
         /// <returns>True if the score is saved.</returns>
         protected override bool ReplaceResult(LisResult result)
         {
-            // Only valid SourcedId values are "1", "2", and "3" (see Lti1Controller)
-            if (result.SourcedId.Equals("1") || result.SourcedId.Equals("2") || result.SourcedId.Equals("3"))
+            if (LisResultSourcedIdIsValid(result.SourcedId))
             {
                 if (_lisResult == null)
                 {
@@ -68,6 +65,23 @@ namespace ConsumerCertification.Controllers
                 return true;
             }
             return false;
+        }
+
+        private bool LisResultSourcedIdIsValid(string lisResultSourcedId)
+        {
+            // LisResultSourcedId is {userId}-{linkId} (see Lti1Controller)
+            var sourcedId = lisResultSourcedId.Split('-');
+            if (sourcedId.Length < 2)
+            {
+                return false;
+            }
+            // Only valid userIds are 1, 2, 3
+            if (!sourcedId[0].Equals("1") && !sourcedId[0].Equals("2") && !sourcedId[0].Equals("3"))
+            {
+                return false;
+            }
+            // Only valid linkIds are link1, link2
+            return sourcedId[1].Equals("link1") || sourcedId[1].Equals("link2");
         }
     }
 }
