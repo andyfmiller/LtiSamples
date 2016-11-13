@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Services.Description;
 using LtiLibrary.AspNet.Lti1;
 using LtiLibrary.Core.Common;
 using LtiLibrary.Core.Lti1;
@@ -132,9 +133,13 @@ namespace SimpleLti.Controllers
             ltiRequest.AddCustomParameter("tc_profile_url", "$ToolConsumerProfile.url");
 
             var results = Inspector.Inspect(ltiRequest, new[] { Inspection.Outcomes10 });
-            if (results.Length > 0)
+            foreach (var inspectionResult in results)
             {
                 Debug.WriteLine($"{results[0].Severity}: {results[0].Message}");
+                if (inspectionResult.Severity == InspectionSeverity.Error)
+                {
+                    return RedirectToAction("Error", "Home", new { Message = inspectionResult.Message});
+                }
             }
             return View(ltiRequest.GetViewModel("secret"));
         }
