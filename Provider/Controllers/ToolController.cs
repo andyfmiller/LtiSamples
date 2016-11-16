@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -297,7 +298,8 @@ namespace Provider.Controllers
             if (outcome != null)
             {
                 var consumer = ProviderContext.Consumers.Find(outcome.ConsumerId);
-                var score = OutcomesClient.ReadScore(outcome.ServiceUrl, consumer.Key, consumer.Secret, outcome.LisResultSourcedId);
+                var score = Task.Run(() => OutcomesClient.ReadScoreAsync(
+                    outcome.ServiceUrl, consumer.Key, consumer.Secret, outcome.LisResultSourcedId)).Result;
                 if (score.IsValid)
                 {
                     return PartialView("_PostScoresPartial",
@@ -320,8 +322,8 @@ namespace Provider.Controllers
         {
             var outcome = ProviderContext.Outcomes.Find(model.OutcomeId);
             var consumer = ProviderContext.Consumers.Find(outcome.ConsumerId);
-            var result  = OutcomesClient.PostScore(
-                outcome.ServiceUrl, consumer.Key, consumer.Secret, outcome.LisResultSourcedId, model.Score);
+            var result  = Task.Run(() => OutcomesClient.PostScoreAsync(
+                outcome.ServiceUrl, consumer.Key, consumer.Secret, outcome.LisResultSourcedId, model.Score)).Result;
             return RedirectToAction("View", new { id = model.ToolId, success = result.IsValid });
         }
 
