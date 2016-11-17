@@ -132,15 +132,12 @@ namespace SimpleLti.Controllers
             }
             ltiRequest.AddCustomParameter("tc_profile_url", "$ToolConsumerProfile.url");
 
-            var results = Inspector.Inspect(ltiRequest, new[] { Inspection.Outcomes10 });
-            foreach (var inspectionResult in results)
-            {
-                Debug.WriteLine($"{results[0].Severity}: {results[0].Message}");
-                if (inspectionResult.Severity == InspectionSeverity.Error)
-                {
-                    return RedirectToAction("Error", "Home", new { Message = inspectionResult.Message});
-                }
-            }
+            // Substitute custom variables and calculate the signature
+            ltiRequest.SubstituteVariablesAndCalculateSignature("secret");
+
+            // Throw exception is the request is not valid
+            ltiRequest.CheckForRequiredLtiParameters();
+
             return View(ltiRequest.GetViewModel("secret"));
         }
 

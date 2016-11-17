@@ -28,10 +28,9 @@ namespace SimpleLti.Controllers
             try
             {
                 // Parse and validate the request
-                Request.CheckForRequiredLtiParameters();
-
                 var ltiRequest = new LtiRequest(null);
                 ltiRequest.ParseRequest(Request);
+                ltiRequest.CheckForRequiredLtiParameters();
 
                 if (!ltiRequest.ConsumerKey.Equals("12345"))
                 {
