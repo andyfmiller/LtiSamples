@@ -70,12 +70,6 @@ namespace SimpleLti.WebForms
             context.Response.WriteLtiRequest(ltiRequest, "secret");
         }
 
-        public bool IsReusable
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsReusable => false;
     }
 }

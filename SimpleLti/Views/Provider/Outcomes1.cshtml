@@ -13,15 +13,8 @@
     <div>Consumer Key: @Html.TextBoxFor(m => m.ConsumerKey, new {disabled = true, size = 100})</div>
     <div>Consumer Secret: @Html.TextBoxFor(m => m.ConsumerSecret, new {disabled = true, size = 100})</div>
     <p>
-        Grade to send to the Tool Consumer: 
-        @if (Model.Score.HasValue)
-        {
-            @Html.TextBoxFor(m => m.Score, new { Model.Score.Value })
-        }
-        else
-        {
-            @Html.TextBoxFor(m => m.Score, new { Value = "" })
-        }
+        Grade to send to the Tool Consumer:
+        @(Model.Score.HasValue ? Html.TextBoxFor(m => m.Score, new {Model.Score.Value}) : Html.TextBoxFor(m => m.Score, new {Value = ""}))
         @ViewBag.Message
     </p>
     <input type="submit" name="submit" value="Send Grade" />
