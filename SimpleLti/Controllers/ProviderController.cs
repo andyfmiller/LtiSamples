@@ -161,7 +161,7 @@ namespace SimpleLti.Controllers
         /// </remarks>
         public async Task<ActionResult> GetToolConsumerProfile(string url)
         {
-            var toolConsumerProfileResponse = await ToolConsumerProfileClient.GetToolConsumerProfile(url);
+            var toolConsumerProfileResponse = await ToolConsumerProfileClient.GetToolConsumerProfileAsync(url);
             return View(toolConsumerProfileResponse);
             //return Content(@"<table><tr><td><pre>" + toolConsumerProfileResponse.HttpRequest+ "</pre>");
         }
@@ -205,7 +205,7 @@ namespace SimpleLti.Controllers
             switch (submit)
             {
                 case "Delete LineItem (Delete)":
-                    var deleteLineItemResponse = await OutcomesClient.DeleteLineItem(
+                    var deleteLineItemResponse = await OutcomesClient.DeleteLineItemAsync(
                         model.LineItemServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret);
@@ -233,7 +233,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Get LineItem (Read)":
-                    var getLineItemResponse = await OutcomesClient.GetLineItem(
+                    var getLineItemResponse = await OutcomesClient.GetLineItemAsync(
                         model.LineItemServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret);
@@ -261,7 +261,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Get LineItemResults (Read)":
-                    var getLineItemResultsResponse = await OutcomesClient.GetLineItemWithResults(
+                    var getLineItemResultsResponse = await OutcomesClient.GetLineItemWithResultsAsync(
                         model.LineItemServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret);
@@ -289,7 +289,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Get LineItems (Read)":
-                    var getLineItemsResponse = await OutcomesClient.GetLineItems(
+                    var getLineItemsResponse = await OutcomesClient.GetLineItemsAsync(
                         model.LineItemsServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret,
@@ -323,7 +323,7 @@ namespace SimpleLti.Controllers
                         AssignedActivity = new Activity { ActivityId = model.LineItem.AssignedActivity.ActivityId},
                         ScoreContraints = new NumericLimits {  NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110}
                     };
-                    var postLineItemResponse = await OutcomesClient.PostLineItem(
+                    var postLineItemResponse = await OutcomesClient.PostLineItemAsync(
                         postLineItem,
                         model.LineItemsServiceUrl,
                         model.ConsumerKey,
@@ -361,7 +361,7 @@ namespace SimpleLti.Controllers
                         ScoreContraints = new NumericLimits { NormalMaximum = 100, ExtraCreditMaximum = 10, TotalMaximum = 110 },
                         Results = model.LineItem.Results
                     };
-                    var putLineItemResponse = await OutcomesClient.PutLineItem(
+                    var putLineItemResponse = await OutcomesClient.PutLineItemAsync(
                         putLineItem,
                         model.LineItemsServiceUrl,
                         model.ConsumerKey,
@@ -388,7 +388,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Delete Result (Delete)":
-                    var deleteResultResponse = await OutcomesClient.DeleteResult(
+                    var deleteResultResponse = await OutcomesClient.DeleteResultAsync(
                         model.ResultServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret);
@@ -416,7 +416,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Get Result (Read)":
-                    var getResultResponse = await OutcomesClient.GetResult(
+                    var getResultResponse = await OutcomesClient.GetResultAsync(
                         model.ResultServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret);
@@ -444,7 +444,7 @@ namespace SimpleLti.Controllers
                     }
                     break;
                 case "Get Results (Read)":
-                    var getResultsResponse = await OutcomesClient.GetResults(
+                    var getResultsResponse = await OutcomesClient.GetResultsAsync(
                         model.ResultsServiceUrl,
                         model.ConsumerKey,
                         model.ConsumerSecret);
@@ -481,7 +481,7 @@ namespace SimpleLti.Controllers
                             ResultStatus = ResultStatus.Completed,
                             TotalScore = (decimal?) 0.75
                         };
-                    var postResultResponse = await OutcomesClient.PostResult(
+                    var postResultResponse = await OutcomesClient.PostResultAsync(
                         postResult,
                         model.ResultServiceUrl,
                         model.ConsumerKey,
@@ -521,7 +521,7 @@ namespace SimpleLti.Controllers
                             ResultStatus = ResultStatus.Final, // Change the status to Final
                             TotalScore = (decimal?)0.75
                         };
-                    var putResultResponse = await OutcomesClient.PutResult(
+                    var putResultResponse = await OutcomesClient.PutResultAsync(
                         putResult,
                         model.ResultServiceUrl,
                         model.ConsumerKey,
