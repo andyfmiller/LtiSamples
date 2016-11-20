@@ -116,7 +116,7 @@ namespace SimpleLti.Controllers
                 ltiRequest.ResultsServiceUrl = controllerUri.AbsoluteUri;
             }
             // We could just add the values here, but using parameter substitution
-            // is way to test that the correct substitions are happening
+            // is a way to test that the correct substitions are happening
             ltiRequest.AddCustomParameter("lineitem_url", "$LineItem.url");
             ltiRequest.AddCustomParameter("lineitems_url", "$LineItems.url");
             ltiRequest.AddCustomParameter("result_url", "$Result.url");
@@ -135,7 +135,8 @@ namespace SimpleLti.Controllers
             // Substitute custom variables and calculate the signature
             ltiRequest.SubstituteVariablesAndCalculateSignature("secret");
 
-            // Throw exception is the request is not valid
+            // This is optional for you, the developer. CheckForRequiredLtiParameters will throw
+            // an exception is the request does not contain required parameters.
             ltiRequest.CheckForRequiredLtiParameters();
 
             return View(ltiRequest.GetViewModel("secret"));
