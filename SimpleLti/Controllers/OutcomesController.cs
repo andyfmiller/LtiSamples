@@ -33,7 +33,7 @@ namespace SimpleLti.Controllers
         {
             if (_lisResult == null || !lisResultSourcedId.Equals(_lisResult.SourcedId, StringComparison.InvariantCultureIgnoreCase))
             {
-                return new LisResult { IsValid = true };
+                return new LisResult { IsValid = false };
             }
             return _lisResult;
         }
