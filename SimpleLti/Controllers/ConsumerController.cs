@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Services.Description;
 using LtiLibrary.AspNet.Lti1;
 using LtiLibrary.Core.Common;
 using LtiLibrary.Core.Lti1;
@@ -114,7 +116,7 @@ namespace SimpleLti.Controllers
                 ltiRequest.ResultsServiceUrl = controllerUri.AbsoluteUri;
             }
             // We could just add the values here, but using parameter substitution
-            // is way to test that the correct substitions are happening
+            // is a way to test that the correct substitions are happening
             ltiRequest.AddCustomParameter("lineitem_url", "$LineItem.url");
             ltiRequest.AddCustomParameter("lineitems_url", "$LineItems.url");
             ltiRequest.AddCustomParameter("result_url", "$Result.url");
@@ -129,6 +131,13 @@ namespace SimpleLti.Controllers
                 ltiRequest.ToolConsumerProfileUrl = controllerUri.AbsoluteUri;
             }
             ltiRequest.AddCustomParameter("tc_profile_url", "$ToolConsumerProfile.url");
+
+            // Substitute custom variables and calculate the signature
+            ltiRequest.SubstituteVariablesAndCalculateSignature("secret");
+
+            // This is optional for you, the developer. CheckForRequiredLtiParameters will throw
+            // an exception is the request does not contain required parameters.
+            ltiRequest.CheckForRequiredLtiParameters();
 
             return View(ltiRequest.GetViewModel("secret"));
         }
